@@ -26,17 +26,5 @@ public class ClientPlayer extends Player {
 	public void update(Level level) {
 		super.update(level);
 		
-		//client controls
-		if (Gdx.input.isKeyPressed(Keys.D)) {
-			right = true;
-		} else {
-			right = false;
-		}
-		if (Gdx.input.isKeyPressed(Keys.A)) {
-			left = true;
-		} else {
-			left = false;
-		}
-		
 	}
 }

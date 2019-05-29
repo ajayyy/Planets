@@ -21,12 +21,12 @@ public class Main extends ApplicationAdapter {
 	
 	Camera camera;
 	
-	Level level;
+	ClientLevel level;
 	
 	@Override
 	public void create () {
-		level = new Level();
-		level.players.add(new ClientPlayer());
+		level = new ClientLevel();
+		level.setClientPlayer(new ClientControlledPlayer());
 		
 		spriteBatch = new SpriteBatch();
 		shapeRenderer = new ShapeRenderer();
@@ -38,19 +38,9 @@ public class Main extends ApplicationAdapter {
 	}
 
 	public void update() { 
-		level.deltaTime = Gdx.graphics.getDeltaTime();
+		level.deltaTime = Gdx.graphics.getRawDeltaTime();
 		level.update();
 		
-		//move camera to be centered on the client player
-		//linearly interpolate
-		float lerp = 2.5f;
-		float xMovement = ((level.players.get(0).x - camera.position.x) * lerp * level.deltaTime);
-		float yMovement = ((level.players.get(0).y - camera.position.y) * lerp * level.deltaTime);
-		
-		camera.position.x += xMovement;
-		camera.position.y += yMovement;
-		
-		camera.update();
 	}
 	
 	public void draw() {
@@ -68,7 +58,9 @@ public class Main extends ApplicationAdapter {
 		shapeRenderer.circle(0, 0, 3);
 		shapeRenderer.end();
 		
-		((ClientPlayer) level.players.get(0)).render(level, spriteBatch, shapeRenderer);
+		//render level
+		level.render(this, spriteBatch, shapeRenderer);
+		
 	}
 	
 	@Override
