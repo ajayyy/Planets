@@ -19,7 +19,6 @@ public class ClientPlanet extends Planet {
 	
 	public void render(Level level, SpriteBatch batch, ShapeRenderer shapeRenderer) {
 		shapeRenderer.begin(ShapeType.Filled);
-		System.out.println(radius);
 		
 		shapeRenderer.circle(x, y, radius);
 		

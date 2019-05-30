@@ -69,17 +69,21 @@ public class Main extends ApplicationAdapter {
 	
 	@Override
 	public void render () {
-		
 		//update and then render
 		update();
 		
 		draw();
+	}
+	
+	@Override
+	public void resize(int width, int height) {
+		//resize the camera's viewpoint to prevent scaling
+		camera.viewportWidth = width;
+		camera.viewportHeight = height;
 		
-//		Gdx.gl.glClearColor(1, 0, 0, 1);
-//		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-//		batch.begin();
-//		batch.draw(img, 0, 0);
-//		batch.end();
+		System.out.println(width + " " + height);
+		
+		camera.update();
 	}
 	
 	@Override
