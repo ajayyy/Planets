@@ -8,6 +8,15 @@ public class Player extends PhysicsObject {
 	
 	public float movementSpeed = 500;
 	
+	public float radius = 25;
+	
+	public Player(float x, float y) {
+		super();
+		
+		this.x = x;
+		this.y = y;
+	}
+	
 	public void update(Level level) {
 		super.update(level);
 		

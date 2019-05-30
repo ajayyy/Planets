@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 
 import app.ajay.planets.base.Level;
+import app.ajay.planets.base.Planet;
 
 public class Main extends ApplicationAdapter {
 	
@@ -26,7 +27,10 @@ public class Main extends ApplicationAdapter {
 	@Override
 	public void create () {
 		level = new ClientLevel();
-		level.setClientPlayer(new ClientControlledPlayer());
+		level.setClientPlayer(new ClientControlledPlayer(0, 300));
+		
+		//add a default planet
+		level.planets.add(new ClientPlanet(0, 0, 200));
 		
 		spriteBatch = new SpriteBatch();
 		shapeRenderer = new ShapeRenderer();

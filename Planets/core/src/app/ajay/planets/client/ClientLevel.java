@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 import app.ajay.planets.base.Level;
+import app.ajay.planets.base.Planet;
 import app.ajay.planets.base.Player;
 
 public class ClientLevel extends Level {
@@ -50,6 +51,11 @@ public class ClientLevel extends Level {
 		
 		//update camera
 		cameraUpdates(main);
+		
+		//render all planets
+		for (Planet planet : planets) {
+			((ClientPlanet) planet).render(this, spriteBatch, shapeRenderer);
+		}
 		
 		//render all players
 		for (Player player : players) {

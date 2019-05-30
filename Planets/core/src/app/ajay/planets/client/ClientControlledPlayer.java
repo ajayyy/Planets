@@ -9,8 +9,8 @@ import app.ajay.planets.base.Level;
 
 public class ClientControlledPlayer extends ClientPlayer {
 	
-	public ClientControlledPlayer() {
-		super();
+	public ClientControlledPlayer(float x, float y) {
+		super(x, y);
 	}
 	
 	public void update(Level level) {

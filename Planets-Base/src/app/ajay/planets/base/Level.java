@@ -18,6 +18,11 @@ public class Level {
 		for (Player player : players) {
 			player.update(this);
 		}
+		
+		//update all planets
+		for (Planet planet : planets) {
+			planet.update(this);
+		}
 	}
 	
 }
