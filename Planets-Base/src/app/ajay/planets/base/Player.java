@@ -28,13 +28,7 @@ public class Player extends PhysicsObject {
 			
 			//find nearest planet
 			//this planet will be used to move against
-			Planet closestPlanet = null;
-			for (Planet planet: level.planets) {
-				//if less than 1000 units away
-				if (closestPlanet == null || Math.sqrt(Math.pow(x - planet.x, 2) + Math.pow(y - planet.y, 2)) > closestPlanet.radius) {
-					closestPlanet = planet;
-				}
-			}
+			Planet closestPlanet = getClosestPlanet(level.planets, x, y);
 			
 			//find angle from the object
 			float planetAngle = (float) Math.atan2(y - closestPlanet.y, x - closestPlanet.x);

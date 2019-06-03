@@ -36,13 +36,7 @@ public class PhysicsObject extends WorldObject {
 		if (gravity) {
 			//find nearest planets
 			//only the nearest planets need to affect gravity
-			List<Planet> closePlanetsList = new ArrayList<>();
-			for (Planet planet: level.planets) {
-				//if less than 1000 units away
-				if (Math.sqrt(Math.pow(x - planet.x, 2) + Math.pow(y - planet.y, 2)) < 1000) {
-					closePlanetsList.add(planet);
-				}
-			}
+			List<Planet> closePlanetsList = getClosestPlanets(level.planets, x, y);
 			
 			//all planet's accelerations are added to this
 			float totalGravityAccelX = 0;
@@ -75,28 +69,27 @@ public class PhysicsObject extends WorldObject {
 			float newX = x + xSpeed * timeStep;
 			float newY = y + ySpeed * timeStep;
 			
-			//check if there is a collision with this planet
-			for (Planet planet: closePlanetsList) {
-				float distanceFromPlanet = (float) Math.sqrt(Math.pow(newX - planet.x, 2) + Math.pow(newY - planet.y, 2));
-				if (distanceFromPlanet < planet.radius + radius) {
-					//collision with this planet
-					
-					//move back to be right on the object
-					
-					//find angle from the object
-					float angle = (float) Math.atan2(newY - planet.y, newX - planet.x);
-					
-					//find where the position should be
-					x = (float) (Math.cos(angle) * (planet.radius + radius)) + planet.x;
-					y = (float) (Math.sin(angle) * (planet.radius + radius)) + planet.y;
-					
-					//the extra wasted timestep has to be ignored, since all time steps should always be the same length
-					
-					//bounce
-					xSpeed = (float) (Math.cos(angle) * bounceVelocityConstant);
-					ySpeed = (float) (Math.sin(angle) * bounceVelocityConstant);
-					velocityHandled = true;
-				}
+			//check if there is a collision with the closest planet
+			Planet closestPlanet = getClosestPlanet(closePlanetsList, newX, newY);
+			float distanceFromPlanet = (float) Math.sqrt(Math.pow(newX - closestPlanet.x, 2) + Math.pow(newY - closestPlanet.y, 2));
+			if (distanceFromPlanet < closestPlanet.radius + radius) {
+				//collision with this planet
+				
+				//move back to be right on the object
+				
+				//find angle from the object
+				float angle = (float) Math.atan2(newY - closestPlanet.y, newX - closestPlanet.x);
+				
+				//find where the position should be
+				x = (float) (Math.cos(angle) * (closestPlanet.radius + radius)) + closestPlanet.x;
+				y = (float) (Math.sin(angle) * (closestPlanet.radius + radius)) + closestPlanet.y;
+				
+				//the extra wasted timestep has to be ignored, since all time steps should always be the same length
+				
+				//bounce
+				xSpeed = (float) (Math.cos(angle) * bounceVelocityConstant);
+				ySpeed = (float) (Math.sin(angle) * bounceVelocityConstant);
+				velocityHandled = true;
 			}
 		}
 		
@@ -105,5 +98,30 @@ public class PhysicsObject extends WorldObject {
 			x += xSpeed * timeStep;
 			y += ySpeed * timeStep;
 		}
+	}
+	
+	public List<Planet> getClosestPlanets(List<Planet> planets, float x, float y) {
+		//find nearest planets
+		List<Planet> closePlanetsList = new ArrayList<>();
+		for (Planet planet: planets) {
+			//if less than 1000 units away
+			if (Math.sqrt(Math.pow(x - planet.x, 2) + Math.pow(y - planet.y, 2)) < 1000) {
+				closePlanetsList.add(planet);
+			}
+		}
+		
+		return closePlanetsList;
+	}
+	
+	public Planet getClosestPlanet(List<Planet> planets, float x, float y) {
+		//find nearest planet
+		Planet closestPlanet = null;
+		for (Planet planet: planets) {
+			if (closestPlanet == null || Math.sqrt(Math.pow(x - planet.x, 2) + Math.pow(y - planet.y, 2)) > closestPlanet.radius) {
+				closestPlanet = planet;
+			}
+		}
+		
+		return closestPlanet;
 	}
 }
