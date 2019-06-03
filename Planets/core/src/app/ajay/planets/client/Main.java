@@ -22,10 +22,10 @@ public class Main extends ApplicationAdapter {
 	@Override
 	public void create () {
 		level = new ClientLevel();
-		level.setClientPlayer(new ClientControlledPlayer(0, 300));
+		level.setClientPlayer(new ClientControlledPlayer(0, 400));
 		
 		//add a default planet
-		level.planets.add(new ClientPlanet(0, 0, 200));
+		level.planets.add(new ClientPlanet(0, 0, 300));
 		
 		spriteBatch = new SpriteBatch();
 		shapeRenderer = new ShapeRenderer();

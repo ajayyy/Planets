@@ -10,7 +10,7 @@ public class PhysicsObject extends WorldObject {
 	
 	public boolean gravity = true;
 	
-	public float gravityConstant = 50000000f;
+	public float gravityConstant = 100000000f;
 	
 	public float bounceVelocityConstant = 450f;
 	
