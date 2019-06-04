@@ -9,7 +9,7 @@ public class Player extends PhysicsObject {
 	
 	public boolean alive;
 	
-	public float movementSpeed = 400;
+	public float movementSpeed = 300;
 	
 	public Player(float x, float y) {
 		super();

@@ -59,7 +59,7 @@ public class PhysicsObject extends WorldObject {
 				totalGravityAccelY += accelY;
 			}
 			
-			//add to velocity
+			//create the gravity velocity
 			xSpeed += totalGravityAccelX * timeStep;
 			ySpeed += totalGravityAccelY * timeStep;
 			
@@ -71,25 +71,46 @@ public class PhysicsObject extends WorldObject {
 			
 			//check if there is a collision with the closest planet
 			Planet closestPlanet = getClosestPlanet(closePlanetsList, newX, newY);
-			float distanceFromPlanet = (float) Math.sqrt(Math.pow(newX - closestPlanet.x, 2) + Math.pow(newY - closestPlanet.y, 2));
-			if (distanceFromPlanet < closestPlanet.radius + radius) {
-				//collision with this planet
-				
-				//move back to be right on the object
-				
-				//find angle from the object
-				float angle = (float) Math.atan2(newY - closestPlanet.y, newX - closestPlanet.x);
-				
-				//find where the position should be
-				x = (float) (Math.cos(angle) * (closestPlanet.radius + radius)) + closestPlanet.x;
-				y = (float) (Math.sin(angle) * (closestPlanet.radius + radius)) + closestPlanet.y;
-				
-				//the extra wasted timestep has to be ignored, since all time steps should always be the same length
-				
-				//bounce
-				xSpeed = (float) (Math.cos(angle) * bounceVelocityConstant);
-				ySpeed = (float) (Math.sin(angle) * bounceVelocityConstant);
-				velocityHandled = true;
+			//if there is any planet that can possible collide
+			if (closestPlanet != null) {
+				float distanceFromPlanet = (float) Math.sqrt(Math.pow(newX - closestPlanet.x, 2) + Math.pow(newY - closestPlanet.y, 2));
+				if (distanceFromPlanet < closestPlanet.radius + radius) {
+					//collision with this planet
+					
+					//move back to be right on the object
+					
+					//find angle from the object
+					float planetNormalAngle = (float) Math.atan2(newY - closestPlanet.y, newX - closestPlanet.x);
+					
+					//find where the position should be
+					x = (float) (Math.cos(planetNormalAngle) * (closestPlanet.radius + radius)) + closestPlanet.x;
+					y = (float) (Math.sin(planetNormalAngle) * (closestPlanet.radius + radius)) + closestPlanet.y;
+					
+					//the extra wasted timestep has to be ignored, since all time steps should always be the same length
+					
+					//bounce, this finds the optimal angle to bounce the object at
+					//this is used to make the previous speed be taken into account
+					//modified algoritm from https://stackoverflow.com/a/573206/1985387
+					
+					//project the current speed onto the normal of the planet
+					double xSpeedOnNormal = 2 * (MathHelper.getDotProduct(xSpeed, ySpeed, Math.cos(planetNormalAngle), Math.sin(planetNormalAngle))) * Math.cos(planetNormalAngle);
+					double ySpeedOnNormal = 2 * (MathHelper.getDotProduct(xSpeed, ySpeed, Math.cos(planetNormalAngle), Math.sin(planetNormalAngle))) * Math.sin(planetNormalAngle);
+					
+					//the direction that it should bounce at in components
+					//calculated by removing the current speed projected onto the normal from the current speed
+					//whatever speed is extra
+					//it doesn't bounce directly up from the normal, but takes the current speed into account
+					double bounceDirectionX = xSpeed - xSpeedOnNormal;
+					double bounceDirectionY = ySpeed - ySpeedOnNormal;
+					
+					//the angle from that direction
+					double bounceAngle = Math.atan2(bounceDirectionY, bounceDirectionX);
+					//multiply that direction by the scale
+					xSpeed = (float) (Math.cos(bounceAngle) * bounceVelocityConstant);
+					ySpeed = (float) (Math.sin(bounceAngle) * bounceVelocityConstant);
+					
+					velocityHandled = true;
+				}
 			}
 		}
 		
