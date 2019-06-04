@@ -18,6 +18,7 @@ public class Player extends PhysicsObject {
 		this.y = y;
 		
 		radius = 25;
+		canBounce = true;
 	}
 	
 	public void update(Level level) {
@@ -46,7 +47,6 @@ public class Player extends PhysicsObject {
 				ySpeed += Math.sin(movementAngle) * movementSpeed * level.deltaTime;
 			}
 		}
-		
 		
 	}
 	

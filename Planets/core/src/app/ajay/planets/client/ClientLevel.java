@@ -1,5 +1,7 @@
 package app.ajay.planets.client;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -7,6 +9,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import app.ajay.planets.base.Level;
 import app.ajay.planets.base.Planet;
 import app.ajay.planets.base.Player;
+import app.ajay.planets.base.Projectile;
 
 public class ClientLevel extends Level {
 	
@@ -55,6 +58,11 @@ public class ClientLevel extends Level {
 		//render all planets
 		for (Planet planet : planets) {
 			((ClientPlanet) planet).render(this, spriteBatch, shapeRenderer);
+		}
+		
+		//render all projectiles
+		for (Projectile projectile : new ArrayList<Projectile>(projectiles)) {
+			((ClientProjectile) projectile).render(this, spriteBatch, shapeRenderer);
 		}
 		
 		//render all players

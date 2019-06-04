@@ -7,6 +7,8 @@ public class Level {
 	
 	public ArrayList<Player> players = new ArrayList<>();
 	
+	public ArrayList<Projectile> projectiles = new ArrayList<>();
+	
 	/**
 	 * Set to 30 since it has to be the same on all clients
 	 * This means 30 frames per second
@@ -28,6 +30,11 @@ public class Level {
 		//update all planets
 		for (Planet planet : planets) {
 			planet.update(this);
+		}
+		
+		//update all projectiles
+		for (Projectile projectile : new ArrayList<>(projectiles)) {
+			projectile.update(this);
 		}
 	}
 	
