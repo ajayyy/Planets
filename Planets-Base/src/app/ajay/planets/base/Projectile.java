@@ -11,13 +11,15 @@ public class Projectile extends PhysicsObject {
 	public Projectile(float x, float y, float angle) {
 		super();
 		
-		this.x = x;
-		this.y = y;
+		radius = 3;
+		
+		//move this out of the player to not be colliding
+		this.x = (float) (x + radius * 2 * Math.cos(angle));
+		this.y = (float) (y + radius * 2 * Math.sin(angle));
 		
 		xSpeed = (float) (Math.cos(angle) * projectileStrength);
 		ySpeed = (float) (Math.sin(angle) * projectileStrength);
 		
-		radius = 3;
 	}
 	
 	public void update(Level level) {
