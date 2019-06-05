@@ -1,5 +1,6 @@
 package app.ajay.planets.base;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,7 +48,34 @@ public class Player extends PhysicsObject {
 				ySpeed += Math.sin(movementAngle) * movementSpeed * level.deltaTime;
 			}
 		}
+	}
+	
+	/**
+	 * 
+	 * Launch a projectile at this angle. Takes what projectile class to create a new instance of
+	 * 
+	 * @param projectileClass The class to make a new instance of. Used to create ClientProjectiles when needed.
+	 * @param level
+	 * @param launchAngle
+	 */
+	public void launchProjectile(Class<?> projectileClass, Level level, float launchAngle) {
+		//place it right at the edge of the player
+		float projectileX = (float) (x + radius * Math.cos(launchAngle));
+		float projectileY = (float) (y + radius * Math.sin(launchAngle));
 		
+		Projectile projectile = null;
+		try {
+			projectile = (Projectile) projectileClass.getDeclaredConstructor(float.class, float.class, float.class).newInstance(projectileX, projectileY, launchAngle);
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException e) {
+			e.printStackTrace();
+		}
+		
+		//add the opposite force to the player
+		xSpeed += (float) (Math.cos(launchAngle + Math.PI) * projectile.projectileStrength * 0.3f);
+		ySpeed += (float) (Math.sin(launchAngle + Math.PI) * projectile.projectileStrength * 0.3f);
+		
+		level.projectiles.add(projectile);
 	}
 	
 }

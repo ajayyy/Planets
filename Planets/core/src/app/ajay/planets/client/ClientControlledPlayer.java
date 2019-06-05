@@ -42,17 +42,7 @@ public class ClientControlledPlayer extends ClientPlayer {
 			//get angle that this projectile should be launched at
 			float launchAngle = (float) (Math.atan2(y - worldCoords.y, x - worldCoords.x) - Math.PI);
 			
-			//place it right at the edge of the player
-			float projectileX = (float) (x + radius * Math.cos(launchAngle));
-			float projectileY = (float) (y + radius * Math.sin(launchAngle));
-			
-			Projectile projectile = new ClientProjectile(projectileX, projectileY, launchAngle);
-			
-			//add the opposite force to the player
-			xSpeed += (float) (Math.cos(launchAngle + Math.PI) * projectile.projectileStrength * 0.3f);
-			ySpeed += (float) (Math.sin(launchAngle + Math.PI) * projectile.projectileStrength * 0.3f);
-			
-			level.projectiles.add(projectile);
+			launchProjectile(ClientProjectile.class, level, launchAngle);
 		}
 	}
 	
