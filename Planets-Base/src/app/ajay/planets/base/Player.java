@@ -58,7 +58,7 @@ public class Player extends PhysicsObject {
 	 * @param level
 	 * @param launchAngle
 	 */
-	public void launchProjectile(Class<?> projectileClass, Level level, float launchAngle) {
+	public void launchProjectile(Class<? extends Projectile> projectileClass, Level level, float launchAngle) {
 		//place it right at the edge of the player
 		float projectileX = (float) (x + radius * Math.cos(launchAngle));
 		float projectileY = (float) (y + radius * Math.sin(launchAngle));
