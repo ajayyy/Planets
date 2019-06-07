@@ -9,8 +9,8 @@ import app.ajay.planets.base.Player;
 
 public class ClientPlayer extends Player {
 	
-	public ClientPlayer(float x, float y) {
-		super(x, y);
+	public ClientPlayer(int id, float x, float y) {
+		super(id, x, y);
 	}
 	
 	public void render(Level level, SpriteBatch batch, ShapeRenderer shapeRenderer) {

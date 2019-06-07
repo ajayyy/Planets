@@ -1,8 +1,6 @@
 package app.ajay.planets.base;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Player extends PhysicsObject {
 	
@@ -12,9 +10,13 @@ public class Player extends PhysicsObject {
 	
 	public float movementSpeed = 300;
 	
-	public Player(float x, float y) {
+	//the id of this user, -1 if a client
+	int id = -1;
+	
+	public Player(int id, float x, float y) {
 		super();
 		
+		this.id = id;
 		this.x = x;
 		this.y = y;
 		

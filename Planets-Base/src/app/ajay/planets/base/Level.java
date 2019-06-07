@@ -38,4 +38,14 @@ public class Level {
 		}
 	}
 	
+	public Player getPlayerById(int id) {
+		for (Player player : players) {
+			if (player.id == id) {
+				return player;
+			}
+		}
+		
+		//no player was found
+		return null;
+	}
 }

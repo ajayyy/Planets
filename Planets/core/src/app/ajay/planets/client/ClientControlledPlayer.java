@@ -12,7 +12,7 @@ import app.ajay.planets.base.Projectile;
 public class ClientControlledPlayer extends ClientPlayer {
 	
 	public ClientControlledPlayer(float x, float y) {
-		super(x, y);
+		super(-1, x, y);
 	}
 	
 	public void update(Level level) {
