@@ -4,11 +4,8 @@ package app.ajay.planets.server.networking;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 
 import org.java_websocket.WebSocket;
@@ -17,6 +14,7 @@ import org.java_websocket.server.WebSocketServer;
 
 /**
  * Based on code from https://github.com/TooTallNate/Java-WebSocket
+ * This is a library for Java websockets with some changes
  */
 public class WSServer {
 	private int port;

@@ -6,10 +6,10 @@ package app.ajay.planets.server.networking;
 public class WebSocketServerMessenger {
 	WSServer wss;
 
-	ClientMessageReceiver reciever;
+	ServerMessageReceiver reciever;
 
 	// For Bidirectional Communication mode
-	public WebSocketServerMessenger(int port, ClientMessageReceiver s) {
+	public WebSocketServerMessenger(int port, ServerMessageReceiver s) {
 		wss = new WSServer(port, this);
 		this.reciever = s; // To call the methods of the the upper level class
 	}

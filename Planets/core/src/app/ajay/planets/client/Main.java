@@ -9,7 +9,16 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 
-public class Main extends ApplicationAdapter {
+import app.ajay.planets.base.Player;
+import app.ajay.planets.client.networking.ClientMessageReceiver;
+import app.ajay.planets.client.networking.WebSocketClientMessenger;
+
+public class Main extends ApplicationAdapter implements ClientMessageReceiver {
+	
+	/**
+	 * The messenger to communicate with the server
+	 */
+	WebSocketClientMessenger messenger;
 	
 	//variables used for drawing
 	SpriteBatch spriteBatch;
@@ -19,10 +28,24 @@ public class Main extends ApplicationAdapter {
 	
 	ClientLevel level;
 	
+	/**
+	 * The list of commands that could be sent from the server
+	 * 
+	 * Player connected
+	 */
+	String[] commands = {"PC"};
+	
+	//starting positions of all players
+	float playerStartX = 0;
+	float playerStartY = 400;
+	
 	@Override
-	public void create () {
+	public void create() {
+		//connect to server
+		messenger = new WebSocketClientMessenger("localhost", 2492, Gdx.app.getType(), this);
+		
 		level = new ClientLevel();
-		level.setClientPlayer(new ClientControlledPlayer(0, 400));
+		level.setClientPlayer(new ClientControlledPlayer(playerStartX, playerStartY));
 		
 		//add a default planet
 		level.planets.add(new ClientPlanet(0, 0, 300));
@@ -85,5 +108,38 @@ public class Main extends ApplicationAdapter {
 	public void dispose () {
 		spriteBatch.dispose();
 		shapeRenderer.dispose();
+	}
+
+	@Override
+	public void onMessageRecieved(String message) {
+		//first item is the command itself
+		String[] argumentStrings = new String[0];
+		
+		//what command has been sent
+		int command = -1;
+		for (int i = 0; i < commands.length; i++) {
+			if (message.startsWith(commands[i])) {
+				command = i;
+				
+				argumentStrings = commands[i].split(" ");
+				break;
+			}
+		}
+		
+		if (command == -1) {
+			System.err.println("Server sent unrecongnised command: " + message);
+		}
+		
+		//handle the command
+		switch (command) {
+		case 0:
+			level.players.add(new ClientPlayer(Integer.parseInt(argumentStrings[1]), playerStartX, playerStartY));
+			break;
+		}
+	}
+
+	@Override
+	public void onConnect(long time) {
+		
 	}
 }

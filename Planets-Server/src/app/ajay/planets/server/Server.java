@@ -5,10 +5,10 @@ import java.awt.Canvas;
 import app.ajay.planets.base.Level;
 import app.ajay.planets.base.Planet;
 import app.ajay.planets.base.Player;
-import app.ajay.planets.server.networking.ClientMessageReceiver;
+import app.ajay.planets.server.networking.ServerMessageReceiver;
 import app.ajay.planets.server.networking.WebSocketServerMessenger;
 
-public class Server extends Canvas implements Runnable, ClientMessageReceiver {
+public class Server extends Canvas implements Runnable, ServerMessageReceiver {
 	
 	private static final long serialVersionUID = -7693060249008916237L;
 	Thread serverThread;
@@ -27,7 +27,7 @@ public class Server extends Canvas implements Runnable, ClientMessageReceiver {
 	
 	//starting positions of all players
 	float playerStartX = 0;
-	float playerStartY = 300;
+	float playerStartY = 400;
 	
 	public Server() {
 		//init all variables and systems

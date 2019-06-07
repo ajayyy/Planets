@@ -2,6 +2,7 @@ package app.ajay.planets.client.desktop;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
+
 import app.ajay.planets.client.Main;
 
 public class DesktopLauncher {
