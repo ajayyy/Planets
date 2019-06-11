@@ -13,8 +13,8 @@ import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 
 /**
- * Based on code from https://github.com/TooTallNate/Java-WebSocket
- * This is a library for Java websockets with some changes
+ * Based on code from https://github.com/TooTallNate/Java-WebSocket This is a
+ * library for Java websockets with some changes
  */
 public class WSServer {
 	private int port;
@@ -64,7 +64,7 @@ public class WSServer {
 
 					s.reciever.onConnected(clientId);
 
-					// what is the diffference in time/2, that is latency/ping
+					// what is the difference in time/2, that is latency/ping
 					clientId++;
 					nClients++;
 					if (clientId > Integer.MAX_VALUE - 50)
@@ -107,18 +107,15 @@ public class WSServer {
 	}
 
 	public void sendToAll(String text) {
-		synchronized (clientSockets) {
-			for (Connection c : clientSockets) {
-				if (c.getWS().isOpen())
-					c.getWS().send(text);
-				System.out.println("Server send to all:" + c.getWS().isOpen() + "  " + text);
-				// Only we must send the message if the WS is Open.
-			}
+		for (Connection c : clientSockets) {
+			if (c.getWS().isOpen())
+				c.getWS().send(text);
+			System.out.println("Server send to all:" + c.getWS().isOpen() + "  " + text);
+			// We must send the message if the WS is Open.
 		}
 	}
 
-	public boolean sendToClient(int ID, String text) // not tested already
-	{
+	public boolean sendToClient(int ID, String text) {
 		for (Connection c : clientSockets) {
 			if (c.getID() == ID) {
 				c.getWS().send(text);

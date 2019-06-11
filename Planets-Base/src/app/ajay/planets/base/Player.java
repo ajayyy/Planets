@@ -11,7 +11,7 @@ public class Player extends PhysicsObject {
 	public float movementSpeed = 300;
 	
 	//the id of this user, -1 if a client
-	int id = -1;
+	public int id = -1;
 	
 	public Player(int id, float x, float y) {
 		super();

@@ -31,9 +31,9 @@ public class Main extends ApplicationAdapter implements ClientMessageReceiver {
 	/**
 	 * The list of commands that could be sent from the server
 	 * 
-	 * Player connected
+	 * Player connected, player disconnected
 	 */
-	String[] commands = {"PC"};
+	String[] commands = {"PC", "PD"};
 	
 	//starting positions of all players
 	float playerStartX = 0;
@@ -117,11 +117,12 @@ public class Main extends ApplicationAdapter implements ClientMessageReceiver {
 		
 		//what command has been sent
 		int command = -1;
+		System.out.print(message);
 		for (int i = 0; i < commands.length; i++) {
 			if (message.startsWith(commands[i])) {
 				command = i;
 				
-				argumentStrings = commands[i].split(" ");
+				argumentStrings = message.split(" ");
 				break;
 			}
 		}
@@ -134,6 +135,17 @@ public class Main extends ApplicationAdapter implements ClientMessageReceiver {
 		switch (command) {
 		case 0:
 			level.players.add(new ClientPlayer(Integer.parseInt(argumentStrings[1]), playerStartX, playerStartY));
+			break;
+		case 1:
+			System.out.println(argumentStrings[1]);
+			//remove the player under this ID
+			int id = Integer.parseInt(argumentStrings[1]);
+			for (int i = 0; i < level.players.size(); i++) {
+				if (level.players.get(i).id == id) {
+					level.players.remove(i);
+					break;
+				}
+			}
 			break;
 		}
 	}

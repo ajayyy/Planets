@@ -23,7 +23,7 @@ public class Level {
 	public void update() {
 		
 		//update all players
-		for (Player player : players) {
+		for (Player player : new ArrayList<>(players)) {
 			player.update(this);
 		}
 		
@@ -39,7 +39,7 @@ public class Level {
 	}
 	
 	public Player getPlayerById(int id) {
-		for (Player player : players) {
+		for (Player player : new ArrayList<>(players)) {
 			if (player.id == id) {
 				return player;
 			}

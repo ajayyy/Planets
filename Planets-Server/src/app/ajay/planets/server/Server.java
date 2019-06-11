@@ -67,7 +67,7 @@ public class Server extends Canvas implements Runnable, ServerMessageReceiver {
 	public void update() {
 		level.deltaTime = (System.nanoTime() - lastTime) / 1000000000f;
 		lastTime = System.nanoTime();
-
+		
 		level.update();
 	}
 
@@ -79,13 +79,28 @@ public class Server extends Canvas implements Runnable, ServerMessageReceiver {
 	@Override
 	public void onConnected(int id) {
 		//make a new player under this id
+
+		//send this new info to all clients
+		for (Player player: level.players) {
+			messenger.sendMessageToClient(player.id, "PC " + id);
+		}
 		
 		level.players.add(new Player(id, playerStartX, playerStartY));
 	}
 
 	@Override
 	public void onDisconnected(int id) {
+		//remove the player under this ID
+		for (int i = 0; i < level.players.size(); i++) {
+			if (level.players.get(i).id == id) {
+				level.players.remove(i);
+				break;
+			}
+		}
 		
+		//send this new info to all clients
+		messenger.sendMessageToAll("PD " + id);
+
 	}
 	
 }
