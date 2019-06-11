@@ -7,12 +7,11 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
 
 import app.ajay.planets.base.Level;
-import app.ajay.planets.base.Projectile;
 
 public class ClientControlledPlayer extends ClientPlayer {
 	
 	public ClientControlledPlayer(float x, float y) {
-		super(-1, x, y);
+		super(-1, x, y, 0, 0);
 	}
 	
 	public void update(Level level) {
@@ -43,6 +42,9 @@ public class ClientControlledPlayer extends ClientPlayer {
 			float launchAngle = (float) (Math.atan2(y - worldCoords.y, x - worldCoords.x) - Math.PI);
 			
 			launchProjectile(ClientProjectile.class, level, launchAngle);
+			
+			//send command to server
+			((ClientLevel) level).main.messenger.sendMessage("S " + launchAngle);
 		}
 	}
 	

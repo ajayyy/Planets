@@ -5,6 +5,7 @@ import java.awt.Canvas;
 import app.ajay.planets.base.Level;
 import app.ajay.planets.base.Planet;
 import app.ajay.planets.base.Player;
+import app.ajay.planets.base.Projectile;
 import app.ajay.planets.server.networking.ServerMessageReceiver;
 import app.ajay.planets.server.networking.WebSocketServerMessenger;
 
@@ -28,6 +29,13 @@ public class Server extends Canvas implements Runnable, ServerMessageReceiver {
 	//starting positions of all players
 	float playerStartX = 0;
 	float playerStartY = 400;
+	
+	/**
+	 * The list of commands that could be sent from the clients
+	 * 
+	 * Player connected, player disconnected
+	 */
+	String[] commands = {"S"};
 	
 	public Server() {
 		//init all variables and systems
@@ -73,7 +81,37 @@ public class Server extends Canvas implements Runnable, ServerMessageReceiver {
 
 	@Override
 	public void onMessageRecieved(String message, int id) {
+		//first item is the command itself
+		String[] argumentStrings = new String[0];
 		
+		//what command has been sent
+		int command = -1;
+		for (int i = 0; i < commands.length; i++) {
+			if (message.startsWith(commands[i])) {
+				command = i;
+				
+				argumentStrings = message.split(" ");
+				break;
+			}
+		}
+		
+		if (command == -1) {
+			System.err.println("Server sent unrecongnised command: " + message);
+		} else {
+			//send out this command to all other clients
+			for (Player player : level.players) {
+				if (player.id != id) {
+					messenger.sendMessageToClient(player.id, message + " " + id);
+				}
+			}
+		}
+		
+		//handle the command
+		switch (command) {
+		case 0:
+			level.getPlayerById(id).launchProjectile(Projectile.class, level, Float.parseFloat(argumentStrings[1]));
+			break;
+		}
 	}
 
 	@Override
@@ -82,10 +120,17 @@ public class Server extends Canvas implements Runnable, ServerMessageReceiver {
 
 		//send this new info to all clients
 		for (Player player: level.players) {
-			messenger.sendMessageToClient(player.id, "PC " + id);
+			messenger.sendMessageToClient(player.id, "PC " + id + " " + playerStartX + " " + playerStartY + " 0 0");
 		}
 		
 		level.players.add(new Player(id, playerStartX, playerStartY));
+		
+		//send all the connected players to this player
+		for (Player player: level.players) {
+			if (player.id != id) {
+				messenger.sendMessageToClient(id, "PC " + player.id + " " + player.x + " " + player.y + " " + player.xSpeed + " " + player.ySpeed);
+			}
+		}
 	}
 
 	@Override

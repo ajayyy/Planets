@@ -33,7 +33,7 @@ public class Main extends ApplicationAdapter implements ClientMessageReceiver {
 	 * 
 	 * Player connected, player disconnected
 	 */
-	String[] commands = {"PC", "PD"};
+	String[] commands = {"PC", "PD", "S"};
 	
 	//starting positions of all players
 	float playerStartX = 0;
@@ -117,7 +117,6 @@ public class Main extends ApplicationAdapter implements ClientMessageReceiver {
 		
 		//what command has been sent
 		int command = -1;
-		System.out.print(message);
 		for (int i = 0; i < commands.length; i++) {
 			if (message.startsWith(commands[i])) {
 				command = i;
@@ -134,10 +133,12 @@ public class Main extends ApplicationAdapter implements ClientMessageReceiver {
 		//handle the command
 		switch (command) {
 		case 0:
-			level.players.add(new ClientPlayer(Integer.parseInt(argumentStrings[1]), playerStartX, playerStartY));
+			//player connected
+			level.players.add(new ClientPlayer(Integer.parseInt(argumentStrings[1]), Float.parseFloat(argumentStrings[2]), 
+					Float.parseFloat(argumentStrings[3]), Float.parseFloat(argumentStrings[4]), Float.parseFloat(argumentStrings[5])));
 			break;
 		case 1:
-			System.out.println(argumentStrings[1]);
+			//player disconnected
 			//remove the player under this ID
 			int id = Integer.parseInt(argumentStrings[1]);
 			for (int i = 0; i < level.players.size(); i++) {
@@ -146,6 +147,10 @@ public class Main extends ApplicationAdapter implements ClientMessageReceiver {
 					break;
 				}
 			}
+			break;
+		case 2:
+			//player shot
+			level.getPlayerById(Integer.parseInt(argumentStrings[2])).launchProjectile(ClientProjectile.class, level, Float.parseFloat(argumentStrings[1]));
 			break;
 		}
 	}
