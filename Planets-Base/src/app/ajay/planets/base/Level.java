@@ -18,7 +18,7 @@ public class Level {
 	/**
 	 * The amount of time the last frame took. Used to make all movement smooth towards the frame rate.
 	 */
-	public float deltaTime = 1;
+	public float deltaTime = 1/physicsFrameRate;
 	
 	public void update() {
 		
