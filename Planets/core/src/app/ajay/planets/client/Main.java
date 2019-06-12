@@ -61,8 +61,8 @@ public class Main extends ApplicationAdapter implements ClientMessageReceiver {
 
 	public void update() { 
 		level.deltaTime = Gdx.graphics.getRawDeltaTime();
-		level.update();
 		
+		level.update();
 	}
 	
 	public void draw() {
@@ -135,7 +135,8 @@ public class Main extends ApplicationAdapter implements ClientMessageReceiver {
 		case 0:
 			//player connected
 			level.players.add(new ClientPlayer(Integer.parseInt(argumentStrings[1]), Float.parseFloat(argumentStrings[2]), 
-					Float.parseFloat(argumentStrings[3]), Float.parseFloat(argumentStrings[4]), Float.parseFloat(argumentStrings[5])));
+					Float.parseFloat(argumentStrings[3]), Float.parseFloat(argumentStrings[4]), Float.parseFloat(argumentStrings[5]), 
+					Boolean.parseBoolean(argumentStrings[6]), Boolean.parseBoolean(argumentStrings[7])));
 			break;
 		case 1:
 			//player disconnected

@@ -11,7 +11,7 @@ import app.ajay.planets.base.Level;
 public class ClientControlledPlayer extends ClientPlayer {
 	
 	public ClientControlledPlayer(float x, float y) {
-		super(-1, x, y, 0, 0);
+		super(-1, x, y, 0, 0, false, false);
 	}
 	
 	public void update(Level level) {

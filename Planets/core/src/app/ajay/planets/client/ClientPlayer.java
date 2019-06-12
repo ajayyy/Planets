@@ -9,11 +9,13 @@ import app.ajay.planets.base.Player;
 
 public class ClientPlayer extends Player {
 	
-	public ClientPlayer(int id, float x, float y, float xSpeed, float ySpeed) {
+	public ClientPlayer(int id, float x, float y, float xSpeed, float ySpeed, boolean left, boolean right) {
 		super(id, x, y);
 		
 		this.xSpeed = xSpeed;
 		this.ySpeed = ySpeed;
+		this.left = left;
+		this.right = right;
 	}
 	
 	public void render(Level level, SpriteBatch batch, ShapeRenderer shapeRenderer) {

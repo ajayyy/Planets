@@ -137,7 +137,7 @@ public class Server extends Canvas implements Runnable, ServerMessageReceiver {
 
 		//send this new info to all clients
 		for (Player player: level.players) {
-			messenger.sendMessageToClient(player.id, "PC " + id + " " + playerStartX + " " + playerStartY + " 0 0");
+			messenger.sendMessageToClient(player.id, "PC " + id + " " + playerStartX + " " + playerStartY + " 0 0 false false");
 		}
 		
 		level.players.add(new Player(id, playerStartX, playerStartY));
@@ -145,7 +145,8 @@ public class Server extends Canvas implements Runnable, ServerMessageReceiver {
 		//send all the connected players to this player
 		for (Player player: level.players) {
 			if (player.id != id) {
-				messenger.sendMessageToClient(id, "PC " + player.id + " " + player.x + " " + player.y + " " + player.xSpeed + " " + player.ySpeed);
+				messenger.sendMessageToClient(id, "PC " + player.id + " " + player.x + " " + player.y
+						+ " " + player.xSpeed + " " + player.ySpeed + " " + player.left + " " + player.right);
 			}
 		}
 	}
