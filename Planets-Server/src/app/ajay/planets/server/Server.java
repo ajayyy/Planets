@@ -33,9 +33,9 @@ public class Server extends Canvas implements Runnable, ServerMessageReceiver {
 	/**
 	 * The list of commands that could be sent from the clients
 	 * 
-	 * Player connected, player disconnected
+	 * Player shot, Left pressed, Right pressed, left disabled, right disabled
 	 */
-	String[] commands = {"S"};
+	String[] commands = {"S", "L", "R", "LD", "RD"};
 	
 	public Server() {
 		//init all variables and systems
@@ -109,7 +109,24 @@ public class Server extends Canvas implements Runnable, ServerMessageReceiver {
 		//handle the command
 		switch (command) {
 		case 0:
+			//player shot
 			level.getPlayerById(id).launchProjectile(Projectile.class, level, Float.parseFloat(argumentStrings[1]));
+			break;
+		case 1:
+			//left pressed
+			level.getPlayerById(id).left = true;
+			break;
+		case 2:
+			//right pressed
+			level.getPlayerById(id).right = true;
+			break;
+		case 3:
+			//left unpressed
+			level.getPlayerById(id).left = false;
+			break;
+		case 4:
+			//right unpressed
+			level.getPlayerById(id).right = false;
 			break;
 		}
 	}

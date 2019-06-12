@@ -31,9 +31,9 @@ public class Main extends ApplicationAdapter implements ClientMessageReceiver {
 	/**
 	 * The list of commands that could be sent from the server
 	 * 
-	 * Player connected, player disconnected
+	 * Player connected, player disconnected, player shot, left, right, left disabled, right disabled
 	 */
-	String[] commands = {"PC", "PD", "S"};
+	String[] commands = {"PC", "PD", "S", "L", "R", "LD", "RD"};
 	
 	//starting positions of all players
 	float playerStartX = 0;
@@ -149,8 +149,20 @@ public class Main extends ApplicationAdapter implements ClientMessageReceiver {
 			}
 			break;
 		case 2:
-			//player shot
-			level.getPlayerById(Integer.parseInt(argumentStrings[2])).launchProjectile(ClientProjectile.class, level, Float.parseFloat(argumentStrings[1]));
+			//left pressed
+			level.getPlayerById(Integer.parseInt(argumentStrings[1])).left = true;
+			break;
+		case 3:
+			//right pressed
+			level.getPlayerById(Integer.parseInt(argumentStrings[1])).right = true;
+			break;
+		case 4:
+			//left unpressed
+			level.getPlayerById(Integer.parseInt(argumentStrings[1])).left = false;
+			break;
+		case 5:
+			//right unpressed
+			level.getPlayerById(Integer.parseInt(argumentStrings[1])).right = false;
 			break;
 		}
 	}

@@ -18,16 +18,24 @@ public class ClientControlledPlayer extends ClientPlayer {
 		super.update(level);
 		
 		//client controls
-		if (Gdx.input.isKeyPressed(Keys.D)) {
+		if (Gdx.input.isKeyPressed(Keys.D) && !right) {
 			right = true;
-		} else {
+			//send command to server
+			((ClientLevel) level).main.messenger.sendMessage("R");
+		} else if (!Gdx.input.isKeyPressed(Keys.D) && right) {
 			right = false;
+			//send command to server
+			((ClientLevel) level).main.messenger.sendMessage("RD");
 		}
 		
-		if (Gdx.input.isKeyPressed(Keys.A)) {
+		if (Gdx.input.isKeyPressed(Keys.A) && !left) {
 			left = true;
-		} else {
+			//send command to server
+			((ClientLevel) level).main.messenger.sendMessage("L");
+		} else if (!Gdx.input.isKeyPressed(Keys.A) && left) {
 			left = false;
+			//send command to server
+			((ClientLevel) level).main.messenger.sendMessage("LD");
 		}
 		
 		//launch projectile
