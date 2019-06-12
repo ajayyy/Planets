@@ -13,12 +13,12 @@ public class Level {
 	 * Set to 30 since it has to be the same on all clients
 	 * This means 30 frames per second
 	 */
-	int physicsFrameRate = 30;
+	public int physicsFrameRate = 60;
 	
 	/**
 	 * The amount of time the last frame took. Used to make all movement smooth towards the frame rate.
 	 */
-	public float deltaTime = 1/physicsFrameRate;
+	public float deltaTime = 1f/physicsFrameRate;
 	
 	public void update() {
 		

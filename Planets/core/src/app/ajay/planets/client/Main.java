@@ -9,20 +9,23 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 
-import app.ajay.planets.base.Player;
 import app.ajay.planets.client.networking.ClientMessageReceiver;
 import app.ajay.planets.client.networking.WebSocketClientMessenger;
 
 public class Main extends ApplicationAdapter implements ClientMessageReceiver {
 	
-	/**
-	 * The messenger to communicate with the server
-	 */
+	/** The messenger to communicate with the server */
 	WebSocketClientMessenger messenger;
 	
 	//variables used for drawing
 	SpriteBatch spriteBatch;
 	ShapeRenderer shapeRenderer;
+	
+	/**
+	 * Used when calculating frame deltaTime
+	 * It is calculated manually to get more control over it
+	 */
+	long lastTime = -1;
 	
 	Camera camera;
 	
@@ -57,12 +60,24 @@ public class Main extends ApplicationAdapter implements ClientMessageReceiver {
 		camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		spriteBatch.setProjectionMatrix(camera.combined);
 		shapeRenderer.setProjectionMatrix(camera.combined);
+		
+		//setup last frame time
+		lastTime = System.nanoTime();
 	}
 
 	public void update() { 
-		level.deltaTime = Gdx.graphics.getRawDeltaTime();
+		float actualFrameDeltaTime = (System.nanoTime() - lastTime) / 1000000000f;
 		
-		level.update();
+		//frames needed to be done this frame, can only do frames at the rate of level.deltaTime
+		int framesNeeded = (int) (actualFrameDeltaTime / level.deltaTime);
+		
+		for (int i = 0; i < framesNeeded; i++) {
+			//update this many times
+			level.update();
+			
+			//add back how much time has passed
+			lastTime += 1000000000 / level.physicsFrameRate;
+		}
 	}
 	
 	public void draw() {

@@ -73,10 +73,18 @@ public class Server extends Canvas implements Runnable, ServerMessageReceiver {
 	}
 	
 	public void update() {
-		level.deltaTime = (System.nanoTime() - lastTime) / 1000000000f;
-		lastTime = System.nanoTime();
+		float actualFrameDeltaTime = (System.nanoTime() - lastTime) / 1000000000f;
 		
-		level.update();
+		//frames needed to be done this frame, can only do frames at the rate of level.deltaTime
+		int framesNeeded = (int) (actualFrameDeltaTime / level.deltaTime);
+		
+		for (int i = 0; i < framesNeeded; i++) {
+			//update this many times
+			level.update();
+			
+			//add back how much time has passed
+			lastTime += 1000000000 / level.physicsFrameRate;
+		}
 	}
 
 	@Override
