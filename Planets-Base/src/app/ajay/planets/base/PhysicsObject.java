@@ -182,8 +182,8 @@ public class PhysicsObject extends WorldObject {
 		//find nearest planets
 		List<Planet> closePlanetsList = new ArrayList<>();
 		for (Planet planet: planets) {
-			//if less than 1000 units away
-			if (Math.sqrt(Math.pow(x - planet.x, 2) + Math.pow(y - planet.y, 2)) < 1000) {
+			//if less than 2000 units away
+			if (Math.sqrt(Math.pow(x - planet.x, 2) + Math.pow(y - planet.y, 2)) < 2000) {
 				closePlanetsList.add(planet);
 			}
 		}
