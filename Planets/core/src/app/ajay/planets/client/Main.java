@@ -42,6 +42,9 @@ public class Main extends ApplicationAdapter implements ClientMessageReceiver {
 	float playerStartX = 0;
 	float playerStartY = 400;
 	
+	/** the update frame this program is currently on */
+	long frame = 0;
+	
 	@Override
 	public void create() {
 		//connect to server
@@ -77,6 +80,9 @@ public class Main extends ApplicationAdapter implements ClientMessageReceiver {
 			
 			//add back how much time has passed
 			lastTime += 1000000000 / level.physicsFrameRate;
+
+			//one frame has just occurred
+			frame++;
 		}
 	}
 	

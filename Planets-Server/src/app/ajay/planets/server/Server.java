@@ -37,6 +37,9 @@ public class Server extends Canvas implements Runnable, ServerMessageReceiver {
 	 */
 	String[] commands = {"S", "L", "R", "LD", "RD"};
 	
+	/** the update frame this program is currently on */
+	long frame = 0;
+	
 	public Server() {
 		//init all variables and systems
 		init();
@@ -84,6 +87,9 @@ public class Server extends Canvas implements Runnable, ServerMessageReceiver {
 			
 			//add back how much time has passed
 			lastTime += 1000000000 / level.physicsFrameRate;
+			
+			//one frame has just occurred
+			frame++;
 		}
 	}
 
@@ -148,7 +154,7 @@ public class Server extends Canvas implements Runnable, ServerMessageReceiver {
 			messenger.sendMessageToClient(player.id, "PC " + id + " " + playerStartX + " " + playerStartY + " 0 0 false false");
 		}
 		
-		level.players.add(new Player(id, playerStartX, playerStartY));
+		level.players.add(new ServerPlayer(id, playerStartX, playerStartY, frame));
 		
 		//send all the connected players to this player
 		for (Player player: level.players) {
