@@ -1,6 +1,8 @@
 package app.ajay.planets.base;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Player extends PhysicsObject {
 	
@@ -12,6 +14,18 @@ public class Player extends PhysicsObject {
 	
 	//the id of this user, -1 if a client
 	public int id = -1;
+	
+	/** 
+	 * A list of the most recent old states of this player.
+	 * This is a list of the states of this player at every frame.
+	 */
+	List<PlayerOldState> playerOldStates = new ArrayList<PlayerOldState>();
+	
+	/**
+	 * Used during frames. If a projectile has been launched this frame.
+	 */
+	boolean projectileLaunched = false;
+	float projectileAngle;
 	
 	public Player(int id, float x, float y) {
 		super();
@@ -25,6 +39,10 @@ public class Player extends PhysicsObject {
 	}
 	
 	public void update(Level level) {
+		//reset projectile information
+		projectileLaunched = false;
+		projectileAngle = -1;
+		
 		super.update(level);
 		
 		if (right || left) {
@@ -53,6 +71,14 @@ public class Player extends PhysicsObject {
 	}
 	
 	/**
+	 * 	Happens after update, mainly just saving the old state
+	 */
+	public void postUpdate(Level level) {
+		//save an old state of this frame
+		saveOldState(level);
+	}
+	
+	/**
 	 * 
 	 * Launch a projectile at this angle. Takes what projectile class to create a new instance of
 	 * 
@@ -78,6 +104,38 @@ public class Player extends PhysicsObject {
 		ySpeed += (float) (Math.sin(launchAngle + Math.PI) * projectile.projectileStrength * 0.3f);
 		
 		level.projectiles.add(projectile);
+		
+		projectileLaunched = true;
+		projectileAngle = launchAngle;
+	}
+	
+	/**
+	 * Saves an old state of this frame at this current time.
+	 */
+	public void saveOldState(Level level) {
+		playerOldStates.add(new PlayerOldState(level.frame, x, y, xSpeed, ySpeed, left, right, alive, projectileLaunched, projectileAngle));
+		
+		if (playerOldStates.size() > 300) {
+			playerOldStates.remove(0);
+		}
+	}
+	
+	/**
+	 * Gets the old state for that frame of this player.
+	 * 
+	 * If none are found, returns null
+	 * 
+	 * @param frame The frame of the old state
+	 * @return The old state at that frame
+	 */
+	public PlayerOldState getOldStateAtFrame(long frame) {
+		for (PlayerOldState oldState: playerOldStates) {
+			if (oldState.frame == frame) {
+				return oldState;
+			}
+		}
+		
+		return null;
 	}
 	
 }

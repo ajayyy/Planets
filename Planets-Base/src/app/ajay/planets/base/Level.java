@@ -20,11 +20,15 @@ public class Level {
 	 */
 	public float deltaTime = 1f/physicsFrameRate;
 	
+	/** the update frame this program is currently on */
+	public long frame = 0;
+	
 	public void update() {
 		
 		//update all players
 		for (Player player : new ArrayList<>(players)) {
 			player.update(this);
+			player.postUpdate(this);
 		}
 		
 		//update all planets
