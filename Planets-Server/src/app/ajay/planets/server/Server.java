@@ -125,11 +125,11 @@ public class Server extends Canvas implements Runnable, ServerMessageReceiver {
 				//this message contains the modified frame number
 				String newMessageString = argumentStrings[0] + " " + relativeFrameNumber;
 				for (int i = 2; i < argumentStrings.length; i++) {
-					newMessageString += " " + argumentStrings[i];
+					newMessageString += " " + id + " " + argumentStrings[i];
 				}
 				
 				if (player.id != id) {
-					messenger.sendMessageToClient(player.id, newMessageString + " " + id);
+					messenger.sendMessageToClient(player.id, newMessageString);
 				}
 			}
 		}

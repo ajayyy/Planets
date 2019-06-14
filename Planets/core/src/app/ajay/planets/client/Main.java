@@ -9,7 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 
-import app.ajay.planets.base.Level;
+import app.ajay.planets.base.Player;
 import app.ajay.planets.client.networking.ClientMessageReceiver;
 import app.ajay.planets.client.networking.WebSocketClientMessenger;
 
@@ -169,18 +169,24 @@ public class Main extends ApplicationAdapter implements ClientMessageReceiver {
 			}
 			break;
 		case 2:
+			//player shot
+			//launch projectile at the frame it happened
+			Player player = level.getPlayerById(Integer.parseInt(argumentStrings[1]));
+			level.launchProjectileAtFrame(level, Integer.parseInt(argumentStrings[2]), player, Float.parseFloat(argumentStrings[3]));
+			break;
+		case 3:
 			//left pressed
 			level.getPlayerById(Integer.parseInt(argumentStrings[1])).left = true;
 			break;
-		case 3:
+		case 4:
 			//right pressed
 			level.getPlayerById(Integer.parseInt(argumentStrings[1])).right = true;
 			break;
-		case 4:
+		case 5:
 			//left unpressed
 			level.getPlayerById(Integer.parseInt(argumentStrings[1])).left = false;
 			break;
-		case 5:
+		case 6:
 			//right unpressed
 			level.getPlayerById(Integer.parseInt(argumentStrings[1])).right = false;
 			break;
