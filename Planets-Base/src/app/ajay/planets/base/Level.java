@@ -42,21 +42,51 @@ public class Level {
 		}
 	}
 	
-	public void resimulateFrames(Level level, long fromFrame) {
-		long framesToSimulate = level.frame - fromFrame;
+	/**
+	 * Launches projectile as if the game were still at an old frame.
+	 * Rolls back to that frame, launches the projectile, then resimulates the frames up to present
+	 * 
+	 * @param level
+	 * @param oldFrame The frame that this event should have happened
+	 * @param player
+	 * @param projectileAngle
+	 */
+	public void launchProjectileAtFrame(Level level, long oldFrame, Player player, float projectileAngle) {
+		long framesToSimulate = level.frame - oldFrame;
 		
+		rollBackToFrame(level, oldFrame);
+		
+		//launch the projectile at this frame
+		player.projectileLaunched = true;
+		player.projectileAngle = projectileAngle;
+		
+		simulateFrames(level, framesToSimulate);
+	}
+	
+	/**
+	 * Rolls back the whole game to a certain frame
+	 * 
+	 * @param level
+	 * @param oldFrame The frame to roll back to
+	 */
+	public void rollBackToFrame(Level level, long oldFrame) {
 		//reset everything to this frame
-		//TODO deal with projectiles as well
 		for (Player player: level.players) {
 			//this frame's old state
-			PlayerOldState fromFrameOldState = player.getOldStateAtFrame(fromFrame);
+			PlayerOldState fromFrameOldState = player.getOldStateAtFrame(oldFrame);
 			
 			fromFrameOldState.makePlayerThisState(player);
 		}
 		
 		//set the level frame to the correct frame
-		level.frame = fromFrame;
-		
+		level.frame = oldFrame;
+	}
+	
+	/**
+	 * @param level
+	 * @param framesToSimulate Simulates this many frames happening
+	 */
+	public void simulateFrames(Level level, long framesToSimulate) {
 		for (int i = 0; i < framesToSimulate; i++) {
 			//simulate the frames
 			

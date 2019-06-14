@@ -64,7 +64,6 @@ public class PlayerOldState {
 		
 		player.alive = alive;
 		
-		//TODO make this actually launch the projectile
 		if (projectileLaunched) {
 			player.projectileLaunched = projectileLaunched;
 			player.projectileAngle = projectileAngle;

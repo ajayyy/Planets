@@ -1,6 +1,7 @@
 package app.ajay.planets.server;
 
 import java.awt.Canvas;
+import java.io.Console;
 
 import app.ajay.planets.base.Level;
 import app.ajay.planets.base.Planet;
@@ -82,6 +83,10 @@ public class Server extends Canvas implements Runnable, ServerMessageReceiver {
 		for (int i = 0; i < framesNeeded; i++) {
 			level.update();
 			
+			if (level.frame % 5 == 0 && level.players.size() > 0 ) {
+				System.out.println(level.players.get(0).x);
+			}
+			
 			//add back how much time has passed
 			lastTime += 1000000000 / level.physicsFrameRate;
 			
@@ -121,10 +126,9 @@ public class Server extends Canvas implements Runnable, ServerMessageReceiver {
 		switch (command) {
 		case 0:
 			//player shot
-			//queue up a projectile
-			Player player = level.getPlayerById(id);
-			player.projectileLaunched = true;
-			player.projectileAngle = Float.parseFloat(argumentStrings[1]);
+			//launch projectile at the frame it happened
+			ServerPlayer player = (ServerPlayer) level.getPlayerById(id);
+			level.launchProjectileAtFrame(level, player.startFrame + Integer.parseInt(argumentStrings[1]), player, Float.parseFloat(argumentStrings[2]));
 			break;
 		case 1:
 			//left pressed

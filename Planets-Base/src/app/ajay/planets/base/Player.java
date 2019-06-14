@@ -45,10 +45,6 @@ public class Player extends PhysicsObject {
 	}
 	
 	public void update(Level level) {
-		//reset projectile information
-		projectileLaunched = false;
-		projectileAngle = -1;
-		
 		super.update(level);
 		
 		if (right || left) {
@@ -83,6 +79,10 @@ public class Player extends PhysicsObject {
 		if (projectileLaunched) {
 			//there has been a projectile launch queued up
 			launchProjectile(level, projectileAngle);
+			
+			//reset projectile information
+			projectileLaunched = false;
+			projectileAngle = -1;
 		}
 		
 		//save an old state of this frame

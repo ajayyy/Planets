@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 
+import app.ajay.planets.base.Level;
 import app.ajay.planets.client.networking.ClientMessageReceiver;
 import app.ajay.planets.client.networking.WebSocketClientMessenger;
 
