@@ -24,8 +24,14 @@ public class Player extends PhysicsObject {
 	/**
 	 * Used during frames. If a projectile has been launched this frame.
 	 */
-	boolean projectileLaunched = false;
-	float projectileAngle;
+	public boolean projectileLaunched = false;
+	public float projectileAngle;
+	
+	/**
+	 * The class to launch for projectiles.
+	 * Will be set to ClientProjectile on the client.
+	 */
+	public Class<? extends Projectile> projectileClass = Projectile.class;
 	
 	public Player(int id, float x, float y) {
 		super();
@@ -71,9 +77,14 @@ public class Player extends PhysicsObject {
 	}
 	
 	/**
-	 * 	Happens after update, mainly just saving the old state
+	 * 	Happens after update, mainly just saving the old state and dealing with projectiles
 	 */
 	public void postUpdate(Level level) {
+		if (projectileLaunched) {
+			//there has been a projectile launch queued up
+			launchProjectile(level, projectileAngle);
+		}
+		
 		//save an old state of this frame
 		saveOldState(level);
 	}
@@ -86,7 +97,7 @@ public class Player extends PhysicsObject {
 	 * @param level
 	 * @param launchAngle
 	 */
-	public void launchProjectile(Class<? extends Projectile> projectileClass, Level level, float launchAngle) {
+	public void launchProjectile(Level level, float launchAngle) {
 		//place it right at the edge of the player
 		float projectileX = (float) (x + radius * Math.cos(launchAngle));
 		float projectileY = (float) (y + radius * Math.sin(launchAngle));

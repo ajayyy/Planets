@@ -16,6 +16,8 @@ public class ClientPlayer extends Player {
 		this.ySpeed = ySpeed;
 		this.left = left;
 		this.right = right;
+		
+		projectileClass = ClientProjectile.class;
 	}
 	
 	public void render(Level level, SpriteBatch batch, ShapeRenderer shapeRenderer) {

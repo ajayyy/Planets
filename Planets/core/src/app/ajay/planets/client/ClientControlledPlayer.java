@@ -49,10 +49,12 @@ public class ClientControlledPlayer extends ClientPlayer {
 			//get angle that this projectile should be launched at
 			float launchAngle = (float) (Math.atan2(y - worldCoords.y, x - worldCoords.x) - Math.PI);
 			
-			launchProjectile(ClientProjectile.class, level, launchAngle);
+			//queue up a projectile launch
+			projectileLaunched = true;
+			projectileAngle = launchAngle;
 			
 			//send command to server
-			((ClientLevel) level).main.messenger.sendMessage("S " + launchAngle);
+			((ClientLevel) level).main.messenger.sendMessage("S " + level.frame + " " + launchAngle);
 		}
 	}
 	

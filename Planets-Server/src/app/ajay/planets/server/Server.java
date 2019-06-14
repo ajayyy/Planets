@@ -121,7 +121,10 @@ public class Server extends Canvas implements Runnable, ServerMessageReceiver {
 		switch (command) {
 		case 0:
 			//player shot
-			level.getPlayerById(id).launchProjectile(Projectile.class, level, Float.parseFloat(argumentStrings[1]));
+			//queue up a projectile
+			Player player = level.getPlayerById(id);
+			player.projectileLaunched = true;
+			player.projectileAngle = Float.parseFloat(argumentStrings[1]);
 			break;
 		case 1:
 			//left pressed
