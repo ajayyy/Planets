@@ -115,9 +115,21 @@ public class Server extends Canvas implements Runnable, ServerMessageReceiver {
 			System.err.println("Server sent unrecongnised command: " + message);
 		} else {
 			//send out this command to all other clients
+			
 			for (Player player : level.players) {
+				//modify the command so that it sends a proper frame number
+				
+				ServerPlayer messagePlayer = (ServerPlayer) level.getPlayerById(id);
+				long relativeFrameNumber = Integer.parseInt(argumentStrings[1]) + messagePlayer.startFrame - ((ServerPlayer) player).startFrame;
+				
+				//this message contains the modified frame number
+				String newMessageString = argumentStrings[0] + " " + relativeFrameNumber;
+				for (int i = 2; i < argumentStrings.length; i++) {
+					newMessageString += " " + argumentStrings[i];
+				}
+				
 				if (player.id != id) {
-					messenger.sendMessageToClient(player.id, message + " " + id);
+					messenger.sendMessageToClient(player.id, newMessageString + " " + id);
 				}
 			}
 		}
