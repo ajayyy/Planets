@@ -42,6 +42,28 @@ public class Level {
 		}
 	}
 	
+	public void resimulateFrames(Level level, long fromFrame) {
+		long framesToSimulate = level.frame - fromFrame;
+		
+		//reset everything to this frame
+		//TODO deal with projectiles as well
+		for (Player player: level.players) {
+			//this frame's old state
+			PlayerOldState fromFrameOldState = player.getOldStateAtFrame(fromFrame);
+			
+			fromFrameOldState.makePlayerThisState(player);
+		}
+		
+		//set the level frame to the correct frame
+		level.frame = fromFrame;
+		
+		for (int i = 0; i < framesToSimulate; i++) {
+			//simulate the frames
+			
+			level.update();
+		}
+	}
+	
 	public Player getPlayerById(int id) {
 		for (Player player : new ArrayList<>(players)) {
 			if (player.id == id) {

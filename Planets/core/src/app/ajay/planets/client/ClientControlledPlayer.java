@@ -21,21 +21,21 @@ public class ClientControlledPlayer extends ClientPlayer {
 		if (Gdx.input.isKeyPressed(Keys.D) && !right) {
 			right = true;
 			//send command to server
-			((ClientLevel) level).main.messenger.sendMessage("R");
+			((ClientLevel) level).main.messenger.sendMessage("R " + level.frame);
 		} else if (!Gdx.input.isKeyPressed(Keys.D) && right) {
 			right = false;
 			//send command to server
-			((ClientLevel) level).main.messenger.sendMessage("RD");
+			((ClientLevel) level).main.messenger.sendMessage("RD " + level.frame);
 		}
 		
 		if (Gdx.input.isKeyPressed(Keys.A) && !left) {
 			left = true;
 			//send command to server
-			((ClientLevel) level).main.messenger.sendMessage("L");
+			((ClientLevel) level).main.messenger.sendMessage("L " + level.frame);
 		} else if (!Gdx.input.isKeyPressed(Keys.A) && left) {
 			left = false;
 			//send command to server
-			((ClientLevel) level).main.messenger.sendMessage("LD");
+			((ClientLevel) level).main.messenger.sendMessage("LD " + level.frame);
 		}
 		
 		//launch projectile

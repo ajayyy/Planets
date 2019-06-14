@@ -48,4 +48,26 @@ public class PlayerOldState {
 	public PlayerOldState(long frame, float x, float y, float xSpeed, float ySpeed, boolean left, boolean right) {
 		this(frame, x, y, xSpeed, ySpeed, left, right, false, -1);
 	}
+	
+	/**
+	 * Sets player to be in this current state
+	 * 
+	 * @param player
+	 */
+	public void makePlayerThisState(Player player) {
+		player.x = x;
+		player.y = y;
+		player.xSpeed = xSpeed;
+		player.ySpeed = ySpeed;
+		player.left = left;
+		player.right = right;
+		
+		player.alive = alive;
+		
+		//TODO make this actually launch the projectile
+		if (projectileLaunched) {
+			player.projectileLaunched = projectileLaunched;
+			player.projectileAngle = projectileAngle;
+		}
+	}
 }

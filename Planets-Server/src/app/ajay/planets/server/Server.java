@@ -77,9 +77,9 @@ public class Server extends Canvas implements Runnable, ServerMessageReceiver {
 		
 		//frames needed to be done this frame, can only do frames at the rate of level.deltaTime
 		int framesNeeded = (int) (actualFrameDeltaTime / level.deltaTime);
-		
+
+		//update this many times
 		for (int i = 0; i < framesNeeded; i++) {
-			//update this many times
 			level.update();
 			
 			//add back how much time has passed
