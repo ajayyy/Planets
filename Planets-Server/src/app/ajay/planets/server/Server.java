@@ -83,10 +83,6 @@ public class Server extends Canvas implements Runnable, ServerMessageReceiver {
 		for (int i = 0; i < framesNeeded; i++) {
 			level.update();
 			
-			if (level.frame % 5 == 0 && level.players.size() > 0 ) {
-				System.out.println(level.players.get(0).x);
-			}
-			
 			//add back how much time has passed
 			lastTime += 1000000000 / level.physicsFrameRate;
 			
@@ -123,9 +119,9 @@ public class Server extends Canvas implements Runnable, ServerMessageReceiver {
 				long relativeFrameNumber = Integer.parseInt(argumentStrings[1]) + messagePlayer.startFrame - ((ServerPlayer) player).startFrame;
 				
 				//this message contains the modified frame number
-				String newMessageString = argumentStrings[0] + " " + relativeFrameNumber;
+				String newMessageString = argumentStrings[0] + " " + id + " " + relativeFrameNumber;
 				for (int i = 2; i < argumentStrings.length; i++) {
-					newMessageString += " " + id + " " + argumentStrings[i];
+					newMessageString += " " + argumentStrings[i];
 				}
 				
 				if (player.id != id) {
