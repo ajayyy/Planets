@@ -1,6 +1,7 @@
 package app.ajay.planets.base;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Level {
 	public ArrayList<Planet> planets = new ArrayList<>();
@@ -23,7 +24,20 @@ public class Level {
 	/** the update frame this program is currently on */
 	public long frame = 0;
 	
+	/** 
+	 * The list of all the queued actions.
+	 * Used if the server sends an event that happens in the future.
+	 */
+	List<QueuedAction> queuedActions = new ArrayList<QueuedAction>();
+	
 	public void update() {
+		//check for any queued actions and trigger them if necessary
+		for (QueuedAction queuedAction: queuedActions) {
+			if (queuedAction.frame == frame) {
+				//trigger this action
+				queuedAction.execute();
+			}
+		}
 		
 		//update all players
 		for (Player player : new ArrayList<>(players)) {
@@ -40,6 +54,7 @@ public class Level {
 		for (Projectile projectile : new ArrayList<>(projectiles)) {
 			projectile.update(this);
 		}
+		
 	}
 	
 	/**
@@ -53,7 +68,12 @@ public class Level {
 	 */
 	public void launchProjectileAtFrame(Level level, long oldFrame, Player player, float projectileAngle) {
 		long framesToSimulate = level.frame - oldFrame;
-		System.out.println("framesToSimulate: " + framesToSimulate);
+		
+		if (framesToSimulate < 0) {
+			//add this as a queued event instead
+			queuedActions.add(new QueuedAction(oldFrame, player, projectileAngle));
+			return;
+		}
 		
 		//only simulate if necessary
 		if (framesToSimulate != 0) {
