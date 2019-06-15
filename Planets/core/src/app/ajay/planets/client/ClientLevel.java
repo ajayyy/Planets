@@ -25,7 +25,7 @@ public class ClientLevel extends Level {
 	Main main;
 	
 	public void update(Main main) {
-		super.update();
+		super.update(false);
 		
 		this.main = main;
 	}

@@ -81,13 +81,10 @@ public class Server extends Canvas implements Runnable, ServerMessageReceiver {
 
 		//update this many times
 		for (int i = 0; i < framesNeeded; i++) {
-			level.update();
+			level.update(false);
 			
 			//add back how much time has passed
 			lastTime += 1000000000 / level.physicsFrameRate;
-			
-			//one frame has just occurred
-			level.frame++;
 		}
 	}
 

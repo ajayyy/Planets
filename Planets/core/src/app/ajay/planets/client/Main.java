@@ -1,5 +1,8 @@
 package app.ajay.planets.client;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
@@ -10,6 +13,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 
 import app.ajay.planets.base.Player;
+import app.ajay.planets.base.QueuedServerMessageAction;
 import app.ajay.planets.client.networking.ClientMessageReceiver;
 import app.ajay.planets.client.networking.WebSocketClientMessenger;
 
@@ -31,13 +35,6 @@ public class Main extends ApplicationAdapter implements ClientMessageReceiver {
 	Camera camera;
 	
 	ClientLevel level;
-	
-	/**
-	 * The list of commands that could be sent from the server
-	 * 
-	 * Player connected, player disconnected, player shot, left, right, left disabled, right disabled
-	 */
-	String[] commands = {"PC", "PD", "S", "L", "R", "LD", "RD"};
 	
 	//starting positions of all players
 	float playerStartX = 0;
@@ -74,13 +71,10 @@ public class Main extends ApplicationAdapter implements ClientMessageReceiver {
 		
 		//update this many times
 		for (int i = 0; i < framesNeeded; i++) {
-			level.update();
+			level.update(false);
 			
 			//add back how much time has passed
 			lastTime += 1000000000 / level.physicsFrameRate;
-
-			//one frame has just occurred
-			level.frame++;
 		}
 	}
 	
@@ -118,8 +112,6 @@ public class Main extends ApplicationAdapter implements ClientMessageReceiver {
 		camera.viewportWidth = width;
 		camera.viewportHeight = height;
 		
-		System.out.println(width + " " + height);
-		
 		camera.update();
 	}
 	
@@ -131,66 +123,7 @@ public class Main extends ApplicationAdapter implements ClientMessageReceiver {
 
 	@Override
 	public void onMessageRecieved(String message) {
-		//first item is the command itself
-		String[] argumentStrings = new String[0];
-		
-		//what command has been sent
-		int command = -1;
-		for (int i = 0; i < commands.length; i++) {
-			if (message.startsWith(commands[i])) {
-				command = i;
-				
-				argumentStrings = message.split(" ");
-				break;
-			}
-		}
-		
-		if (command == -1) {
-			System.err.println("Server sent unrecongnised command: " + message);
-		}
-		
-		//handle the command
-		switch (command) {
-		case 0:
-			//player connected
-			level.players.add(new ClientPlayer(Integer.parseInt(argumentStrings[1]), Float.parseFloat(argumentStrings[2]), 
-					Float.parseFloat(argumentStrings[3]), Float.parseFloat(argumentStrings[4]), Float.parseFloat(argumentStrings[5]), 
-					Boolean.parseBoolean(argumentStrings[6]), Boolean.parseBoolean(argumentStrings[7])));
-			break;
-		case 1:
-			//player disconnected
-			//remove the player under this ID
-			int id = Integer.parseInt(argumentStrings[1]);
-			for (int i = 0; i < level.players.size(); i++) {
-				if (level.players.get(i).id == id) {
-					level.players.remove(i);
-					break;
-				}
-			}
-			break;
-		case 2:
-			//player shot
-			//launch projectile at the frame it happened
-			Player player = level.getPlayerById(Integer.parseInt(argumentStrings[1]));
-			level.launchProjectileAtFrame(level, Integer.parseInt(argumentStrings[2]), player, Float.parseFloat(argumentStrings[3]));
-			break;
-		case 3:
-			//left pressed
-			level.getPlayerById(Integer.parseInt(argumentStrings[1])).left = true;
-			break;
-		case 4:
-			//right pressed
-			level.getPlayerById(Integer.parseInt(argumentStrings[1])).right = true;
-			break;
-		case 5:
-			//left unpressed
-			level.getPlayerById(Integer.parseInt(argumentStrings[1])).left = false;
-			break;
-		case 6:
-			//right unpressed
-			level.getPlayerById(Integer.parseInt(argumentStrings[1])).right = false;
-			break;
-		}
+		level.queuedServerMessageActions.add(new QueuedServerMessageAction(ClientPlayer.class, message));
 	}
 
 	@Override

@@ -28,11 +28,33 @@ public class Level {
 	 * The list of all the queued actions.
 	 * Used if the server sends an event that happens in the future.
 	 */
-	List<QueuedAction> queuedActions = new ArrayList<QueuedAction>();
+	List<QueuedPlayerAction> queuedActions = new ArrayList<QueuedPlayerAction>();
 	
-	public void update() {
+	/**
+	 * List that contains all the queued message actions.
+	 * These are messages that have been received from the server or clients that have been queued to be processed.
+	 * This is used to make sure that all processing happens on the same frame to be able to properly resimulate and deal with frames.
+	 */
+	public List<QueuedServerMessageAction> queuedServerMessageActions = new ArrayList<QueuedServerMessageAction>();
+	
+	/**
+	 * Update this world.
+	 * 
+	 * @param simulation If this is a simulated update. If it's simulated, then the queued server messages can be ignored temporarily.
+	 */
+	public void update(boolean simulation) {
+		//check for any queued server messages that need to be processed
+		if (!simulation && queuedServerMessageActions.size() > 0) {
+			for (QueuedServerMessageAction queuedServerMessageAction: queuedServerMessageActions) {
+				queuedServerMessageAction.execute(this);
+			}
+			
+			//empty the queue
+			queuedServerMessageActions.removeAll(queuedServerMessageActions);
+		}
+		
 		//check for any queued actions and trigger them if necessary
-		for (QueuedAction queuedAction: queuedActions) {
+		for (QueuedPlayerAction queuedAction: queuedActions) {
 			if (queuedAction.frame == frame) {
 				//trigger this action
 				queuedAction.execute();
@@ -55,6 +77,8 @@ public class Level {
 			projectile.update(this);
 		}
 		
+		//one frame has just occurred
+		frame++;
 	}
 	
 	/**
@@ -71,7 +95,7 @@ public class Level {
 		
 		if (framesToSimulate < 0) {
 			//add this as a queued event instead
-			queuedActions.add(new QueuedAction(oldFrame, player, projectileAngle));
+			queuedActions.add(new QueuedPlayerAction(oldFrame, player, projectileAngle));
 			return;
 		}
 		
@@ -116,8 +140,7 @@ public class Level {
 	public void simulateFrames(Level level, long framesToSimulate) {
 		for (int i = 0; i < framesToSimulate; i++) {
 			//simulate the frames
-			
-			level.update();
+			level.update(true);
 		}
 	}
 	

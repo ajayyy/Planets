@@ -1,6 +1,5 @@
 package app.ajay.planets.base;
 
-import java.awt.Panel;
 import java.util.ArrayList;
 import java.util.List;
 

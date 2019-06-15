@@ -1,8 +1,9 @@
 package app.ajay.planets.base;
 
-public class QueuedAction {
+public class QueuedPlayerAction {
+	
 	public long frame;
-	public ActionType actionType;
+	public PlayerActionType actionType;
 	
 	/** The player this action is referring to */
 	public Player player;
@@ -10,7 +11,7 @@ public class QueuedAction {
 	//for projectile launch
 	public float projectileAngle;
 	
-	public enum ActionType {
+	public enum PlayerActionType {
 		LAUNCH_PROJECTILE
 	}
 	
@@ -20,12 +21,12 @@ public class QueuedAction {
 	 * @param frame The frame this action should happen.
 	 * @param projectileAngle
 	 */
-	public QueuedAction(long frame, Player player, float projectileAngle) {
+	public QueuedPlayerAction(long frame, Player player, float projectileAngle) {
 		this.frame = frame;
 		this.player = player;
 		this.projectileAngle = projectileAngle;
 		
-		actionType = ActionType.LAUNCH_PROJECTILE;
+		actionType = PlayerActionType.LAUNCH_PROJECTILE;
 	}
 	
 	/**
