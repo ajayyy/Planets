@@ -53,14 +53,21 @@ public class Level {
 	 */
 	public void launchProjectileAtFrame(Level level, long oldFrame, Player player, float projectileAngle) {
 		long framesToSimulate = level.frame - oldFrame;
+		System.out.println("framesToSimulate: " + framesToSimulate);
 		
-		rollBackToFrame(level, oldFrame);
+		//only simulate if necessary
+		if (framesToSimulate != 0) {
+			rollBackToFrame(level, oldFrame);
+		}
 		
 		//launch the projectile at this frame
 		player.projectileLaunched = true;
 		player.projectileAngle = projectileAngle;
 		
-		simulateFrames(level, framesToSimulate);
+		//only simulate if necessary
+		if (framesToSimulate != 0) {
+			simulateFrames(level, framesToSimulate);
+		}
 	}
 	
 	/**
