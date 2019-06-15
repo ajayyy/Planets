@@ -1,5 +1,10 @@
 package app.ajay.planets.base;
 
+/**
+ * Class used for player actions that are queued for frames in the future.
+ * Sometimes other clients are running faster than this client, so their 
+ * actions will happen in the future.
+ */
 public class QueuedPlayerAction {
 	
 	public long frame;

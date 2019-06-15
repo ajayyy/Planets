@@ -1,12 +1,12 @@
 package app.ajay.planets.server;
 
 import java.awt.Canvas;
-import java.io.Console;
 
+import app.ajay.planets.base.CommandInfo;
 import app.ajay.planets.base.Level;
 import app.ajay.planets.base.Planet;
 import app.ajay.planets.base.Player;
-import app.ajay.planets.base.Projectile;
+import app.ajay.planets.base.QueuedServerMessageAction;
 import app.ajay.planets.server.networking.ServerMessageReceiver;
 import app.ajay.planets.server.networking.WebSocketServerMessenger;
 
@@ -90,25 +90,20 @@ public class Server extends Canvas implements Runnable, ServerMessageReceiver {
 
 	@Override
 	public void onMessageRecieved(String message, int id) {
-		//first item is the command itself
-		String[] argumentStrings = new String[0];
-		
-		//what command has been sent
-		int command = -1;
-		for (int i = 0; i < commands.length; i++) {
-			if (message.startsWith(commands[i])) {
-				command = i;
-				
-				argumentStrings = message.split(" ");
-				break;
-			}
-		}
-		
+	 	QueuedServerMessageAction queuedServerMessageAction = new QueuedServerMessageAction(ServerPlayer.class, id, message);
+	 	
+	 	CommandInfo commandInfo = queuedServerMessageAction.getCommandCalled();
+	 	
+	 	int command = commandInfo.command;
+	 	String[] argumentStrings = commandInfo.argumentStrings;
+	 	
 		if (command == -1) {
 			System.err.println("Server sent unrecongnised command: " + message);
 		} else {
-			//send out this command to all other clients
+			//add it to the queue, it can be ignored if it is unrecongnised
+			level.queuedServerMessageActions.add(queuedServerMessageAction);
 			
+			//send out this command to all other clients
 			for (Player player : level.players) {
 				//modify the command so that it sends a proper frame number
 				
@@ -125,32 +120,6 @@ public class Server extends Canvas implements Runnable, ServerMessageReceiver {
 					messenger.sendMessageToClient(player.id, newMessageString);
 				}
 			}
-		}
-		
-		//handle the command
-		switch (command) {
-		case 0:
-			//player shot
-			//launch projectile at the frame it happened
-			ServerPlayer player = (ServerPlayer) level.getPlayerById(id);
-			level.launchProjectileAtFrame(level, player.startFrame + Integer.parseInt(argumentStrings[1]), player, Float.parseFloat(argumentStrings[2]));
-			break;
-		case 1:
-			//left pressed
-			level.getPlayerById(id).left = true;
-			break;
-		case 2:
-			//right pressed
-			level.getPlayerById(id).right = true;
-			break;
-		case 3:
-			//left unpressed
-			level.getPlayerById(id).left = false;
-			break;
-		case 4:
-			//right unpressed
-			level.getPlayerById(id).right = false;
-			break;
 		}
 	}
 

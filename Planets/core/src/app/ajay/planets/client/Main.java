@@ -1,8 +1,5 @@
 package app.ajay.planets.client;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
@@ -12,7 +9,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 
-import app.ajay.planets.base.Player;
 import app.ajay.planets.base.QueuedServerMessageAction;
 import app.ajay.planets.client.networking.ClientMessageReceiver;
 import app.ajay.planets.client.networking.WebSocketClientMessenger;

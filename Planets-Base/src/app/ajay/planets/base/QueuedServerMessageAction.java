@@ -1,6 +1,6 @@
 package app.ajay.planets.base;
 
-import java.awt.SystemTray;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 
 /**
@@ -19,12 +19,17 @@ public class QueuedServerMessageAction {
 	 * For server messages, it is not stored there.
 	 */
 	public int id = -1;
+	/**
+	 * If the data is coming from a client to the server, than the frame count will be relative to the client.
+	 * The player's start time must be added to this relative frame count of be accurate.
+	 */
+	public boolean removePlayerStartTime = false;
 	
 	/**
 	 * Used if this is being used on the client and a new player is going to be created.
 	 * This allows a client player to be created.
 	 */
-	Class<? extends Player> playerClass;
+	Class<? extends Player> playerClass = Player.class;
 	
 	/**
 	 * The list of commands that could be sent
@@ -38,27 +43,19 @@ public class QueuedServerMessageAction {
 	}
 	
 	/**
-	 * The constructor used for a MESSAGE_RECEIVED action
-	 * 
-	 * @param message
-	 */
-	public QueuedServerMessageAction(String message) {
-		this.message = message;
-		
-		actionType = ServerMessageActionType.MESSAGE_RECEIVED;
-	}
-	
-	/**
-	 * Constructor used by the client side to be able to support the player connected command.
-	 * The player class is needed for this command.
+	 * Constructor used doe a MESSAGE_RECEIVED action
+	 * The player class is needed for this command in case a player connected.
 	 * 
 	 * @param frame
-	 * @param playerClass The player class to instantiate if necessary, such as ClientPlayer.
+	 * @param playerClass The player class to instantiate if necessary, such as ClientPlayer or ServerPlayer.
 	 * @param message
 	 */
 	public QueuedServerMessageAction(Class<? extends Player> playerClass, String message) {
-		this(message);
+		this.message = message;
 		this.playerClass = playerClass;
+		
+		actionType = ServerMessageActionType.MESSAGE_RECEIVED;
+
 	}
 	
 	/**
@@ -70,10 +67,15 @@ public class QueuedServerMessageAction {
 	 * @param id The player id that this message is from.
 	 * @param message
 	 */
-	public QueuedServerMessageAction(int id, String message) {
-		this(message);
+	public QueuedServerMessageAction(Class<? extends Player> playerClass, int id, String message) {
+		this(playerClass, message);
 		
 		this.id = id;
+		
+		//because the id is known, this is a server message
+		//so, we must convert the relative time to a server absolute time
+		//with this variable
+		removePlayerStartTime = true;
 	}
 	
 	/**
@@ -89,9 +91,12 @@ public class QueuedServerMessageAction {
 	}
 	
 	/**
-	 * Code for when a message is received
+	 * Gets the command being called in this message and splits out the arguments
+	 * 
+	 * @param message
+	 * @return
 	 */
-	public void messageReceived(Level level) {
+	public CommandInfo getCommandCalled() {
 		//first item is the command itself
 		String[] argumentStrings = new String[0];
 		
@@ -105,6 +110,19 @@ public class QueuedServerMessageAction {
 				break;
 			}
 		}
+		
+		return new CommandInfo(command, argumentStrings);
+	}
+	
+	/**
+	 * Code for when a message is received
+	 */
+	public void messageReceived(Level level) {
+		CommandInfo commandInfo = getCommandCalled();
+		
+		//get returned data out of the class
+		int command = commandInfo.command;
+		String[] argumentStrings = commandInfo.argumentStrings;
 		
 		if (command == -1) {
 			System.err.println("Server sent unrecongnised command: " + message);
@@ -188,6 +206,35 @@ public class QueuedServerMessageAction {
 	public void playerLaunchedProjectile(Level level, int id, String[] argumentStrings) {
 		//launch projectile at the frame it happened
 		Player player = level.getPlayerById(id);
-		level.launchProjectileAtFrame(level, Integer.parseInt(argumentStrings[1]), player, Float.parseFloat(argumentStrings[2]));
+		
+		long frame = getRelativeFrameNumber(Integer.parseInt(argumentStrings[1]), player);
+		
+		level.launchProjectileAtFrame(level, frame, player, Float.parseFloat(argumentStrings[2]));
+	}
+	
+	/**
+	 * Gets the absolute frame to this program.
+	 * 
+	 * This is necessary on the server since the frames received are relative to the client
+	 * and not the absolute server frame. So, they must be converted.
+	 * 
+	 * @param frame The frame being received from others.
+	 * @param player The player that sent this message.
+	 * @return The frame to use in calculations.
+	 */
+	public long getRelativeFrameNumber(int frame, Player player) {
+		if (removePlayerStartTime) {
+			//get the start frame using reflection and add it to the frame number
+			try {
+				Field startFrameField = playerClass.getDeclaredField("startFrame");
+				startFrameField.setAccessible(true);
+				
+				return frame + startFrameField.getLong(player);
+			} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return frame;
 	}
 }
