@@ -64,6 +64,8 @@ public class QueuedPlayerAction {
 		this.ySpeed = ySpeed;
 		this.left = left;
 		this.right = right;
+		
+		actionType = PlayerActionType.CONNECTED_PLAYER;
 	}
 	
 	/**
