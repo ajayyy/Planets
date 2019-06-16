@@ -1,5 +1,6 @@
 package app.ajay.planets.base;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,7 +46,7 @@ public class Level {
 	public void update(boolean simulation) {
 		//check for any queued server messages that need to be processed
 		if (!simulation && queuedServerMessageActions.size() > 0) {
-			for (QueuedServerMessageAction queuedServerMessageAction: queuedServerMessageActions) {
+			for (QueuedServerMessageAction queuedServerMessageAction: new ArrayList<>(queuedServerMessageActions)) {
 				queuedServerMessageAction.execute(this);
 			}
 			
@@ -54,15 +55,15 @@ public class Level {
 		}
 		
 		//check for any queued actions and trigger them if necessary
-		for (QueuedPlayerAction queuedAction: queuedActions) {
+		for (QueuedPlayerAction queuedAction: new ArrayList<>(queuedActions)) {
 			if (queuedAction.frame == frame) {
 				//trigger this action
-				queuedAction.execute();
+				queuedAction.execute(this);
 			}
 		}
 		
 		//update all players
-		for (Player player : new ArrayList<>(players)) {
+		for (Player player : players) {
 			player.update(this);
 			player.postUpdate(this);
 		}
@@ -90,8 +91,8 @@ public class Level {
 	 * @param player
 	 * @param projectileAngle
 	 */
-	public void launchProjectileAtFrame(Level level, long oldFrame, Player player, float projectileAngle) {
-		long framesToSimulate = level.frame - oldFrame;
+	public void launchProjectileAtFrame(long oldFrame, Player player, float projectileAngle) {
+		long framesToSimulate = frame - oldFrame;
 		
 		if (framesToSimulate < 0) {
 			//add this as a queued event instead
@@ -101,7 +102,7 @@ public class Level {
 		
 		//only simulate if necessary
 		if (framesToSimulate != 0) {
-			rollBackToFrame(level, oldFrame);
+			rollBackToFrame(oldFrame);
 		}
 		
 		//launch the projectile at this frame
@@ -110,7 +111,48 @@ public class Level {
 		
 		//only simulate if necessary
 		if (framesToSimulate != 0) {
-			simulateFrames(level, framesToSimulate);
+			simulateFrames(framesToSimulate);
+		}
+	}
+	
+	/**
+	 * Launches projectile as if the game were still at an old frame.
+	 * Rolls back to that frame, launches the projectile, then resimulates the frames up to present
+	 * 
+	 * @param level
+	 * @param oldFrame The frame that this event should have happened
+	 * @param player
+	 * @param projectileAngle
+	 */
+	public void connectPlayerAtFrame(long oldFrame, Class<? extends Player> playerClass, int id, float x, float y, float xSpeed, float ySpeed, boolean left, boolean right) {
+		long framesToSimulate = frame - oldFrame;
+		
+		if (framesToSimulate < 0) {
+			//add this as a queued event instead
+			queuedActions.add(new QueuedPlayerAction(oldFrame, playerClass, id, x, y, xSpeed, ySpeed, left, right));
+			return;
+		}
+		
+		//only simulate if necessary
+		if (framesToSimulate != 0) {
+			rollBackToFrame(oldFrame);
+		}
+		
+		//create the new player and add it to the list using reflection (since this class has no direct access to client or server specific classes)
+		try {
+			Player player = (Player) playerClass.getDeclaredConstructor(int.class, float.class, float.class, float.class, float.class, boolean.class, boolean.class)
+					.newInstance(id, x, y, xSpeed, ySpeed, left, right);
+							
+			players.add(player);
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException e) {
+			e.printStackTrace();
+		}
+		
+		
+		//only simulate if necessary
+		if (framesToSimulate != 0) {
+			simulateFrames(framesToSimulate);
 		}
 	}
 	
@@ -120,9 +162,9 @@ public class Level {
 	 * @param level
 	 * @param oldFrame The frame to roll back to.
 	 */
-	public void rollBackToFrame(Level level, long oldFrame) {
+	public void rollBackToFrame(long oldFrame) {
 		//reset everything to this frame
-		for (Player player: level.players) {
+		for (Player player: players) {
 			//this frame's old state
 			PlayerOldState fromFrameOldState = player.getOldStateAtFrame(oldFrame);
 			
@@ -133,14 +175,14 @@ public class Level {
 		}
 		
 		//set the level frame to the correct frame
-		level.frame = oldFrame;
+		frame = oldFrame;
 	}
 	
 	/**
 	 * @param level
 	 * @param framesToSimulate Simulates this many frames happening.
 	 */
-	public void simulateFrames(Level level, long framesToSimulate) {
+	public void simulateFrames(long framesToSimulate) {
 		for (int i = 0; i < framesToSimulate; i++) {
 			//check to see if old state button pressed have to be set
 			for (Player player: players) {
@@ -156,7 +198,7 @@ public class Level {
 			}
 			
 			//simulate the frames
-			level.update(true);
+			update(true);
 		}
 	}
 	

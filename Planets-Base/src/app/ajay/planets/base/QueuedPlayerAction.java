@@ -16,12 +16,19 @@ public class QueuedPlayerAction {
 	//for projectile launch
 	public float projectileAngle;
 	
+	//for player connection
+	Class<? extends Player> playerClass;
+	int id;
+	float x, y, xSpeed, ySpeed;
+	boolean left, right;
+	
 	public enum PlayerActionType {
-		LAUNCH_PROJECTILE
+		LAUNCH_PROJECTILE,
+		CONNECTED_PLAYER
 	}
 	
 	/**
-	 * A projectile being launched
+	 * A projectile being launched.
 	 * 
 	 * @param frame The frame this action should happen.
 	 * @param projectileAngle
@@ -35,21 +42,42 @@ public class QueuedPlayerAction {
 	}
 	
 	/**
+	 * A player has connected.
+	 * 
+	 * @param frame The frame this action should happen.
+	 * @param playerClass
+	 * @param id
+	 * @param x
+	 * @param y
+	 * @param xSpeed
+	 * @param ySpeed
+	 * @param left
+	 * @param right
+	 */
+	public QueuedPlayerAction(long frame, Class<? extends Player> playerClass, int id, float x, float y, float xSpeed, float ySpeed, boolean left, boolean right) {
+		this.frame = frame;
+		this.playerClass = playerClass;
+		this.id = id;
+		this.x = x;
+		this.y = y;
+		this.xSpeed = xSpeed;
+		this.ySpeed = ySpeed;
+		this.left = left;
+		this.right = right;
+	}
+	
+	/**
 	 * Execute this queued event.
 	 */
-	public void execute() {
+	public void execute(Level level) {
 		//execute differently based on action type
 		switch (actionType) {
 		case LAUNCH_PROJECTILE:
-			launchProjectile();
+			level.launchProjectileAtFrame(level.frame, player, projectileAngle);
 			break;
+		case CONNECTED_PLAYER:
+			level.connectPlayerAtFrame(level.frame, playerClass, id, x, y, xSpeed, ySpeed, left, right);
 		}
 	}
 		
-	public void launchProjectile() {
-		//launch the projectile at this frame
-		player.projectileLaunched = true;
-		player.projectileAngle = projectileAngle;
-	}
-	
 }

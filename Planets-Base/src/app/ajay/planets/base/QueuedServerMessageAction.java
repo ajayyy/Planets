@@ -237,18 +237,9 @@ public class QueuedServerMessageAction {
 	}
 	
 	public void playerConnectedFromMessage(Level level, int id, String[] argumentStrings) {
-		//create the new player and add it to the list using reflection (since this class has no direct access to client classes)
-		try {
-			Player player = (Player) playerClass.getDeclaredConstructor(int.class, float.class, float.class, float.class, float.class, boolean.class, boolean.class)
-					.newInstance(id, Float.parseFloat(argumentStrings[1]), 
-							Float.parseFloat(argumentStrings[2]), Float.parseFloat(argumentStrings[3]), Float.parseFloat(argumentStrings[4]), 
-							Boolean.parseBoolean(argumentStrings[5]), Boolean.parseBoolean(argumentStrings[6]));
-							
-			level.players.add(player);
-		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
-				| NoSuchMethodException | SecurityException e) {
-			e.printStackTrace();
-		}
+		level.connectPlayerAtFrame(Long.parseLong(argumentStrings[1]), playerClass, id, Float.parseFloat(argumentStrings[2]), 
+							Float.parseFloat(argumentStrings[3]), Float.parseFloat(argumentStrings[4]), Float.parseFloat(argumentStrings[5]), 
+							Boolean.parseBoolean(argumentStrings[6]), Boolean.parseBoolean(argumentStrings[7]));
 	}
 	
 	public void playerConnected(Level level, int id) {
@@ -299,7 +290,7 @@ public class QueuedServerMessageAction {
 		
 		long frame = getRelativeFrameNumber(Integer.parseInt(argumentStrings[1]), player);
 		
-		level.launchProjectileAtFrame(level, frame, player, Float.parseFloat(argumentStrings[2]));
+		level.launchProjectileAtFrame(frame, player, Float.parseFloat(argumentStrings[2]));
 	}
 	
 	/**

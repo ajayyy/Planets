@@ -1,6 +1,7 @@
 package app.ajay.planets.server;
 
 import java.awt.Canvas;
+import java.util.ArrayList;
 
 import app.ajay.planets.base.CommandInfo;
 import app.ajay.planets.base.Level;
@@ -105,7 +106,7 @@ public class Server extends Canvas implements Runnable, ServerMessageReceiver, S
 			level.queuedServerMessageActions.add(queuedServerMessageAction);
 			
 			//send out this command to all other clients
-			for (Player player : level.players) {
+			for (Player player : new ArrayList<>(level.players)) {
 				//modify the command so that it sends a proper frame number
 				
 				ServerPlayer messagePlayer = (ServerPlayer) level.getPlayerById(id);
@@ -146,14 +147,19 @@ public class Server extends Canvas implements Runnable, ServerMessageReceiver, S
 			//send this new info to all clients
 			for (Player player: level.players) {
 				if (player.id != queuedServerMessageAction.id) {
-					messenger.sendMessageToClient(player.id, "PC " + queuedServerMessageAction.id + " " + queuedServerMessageAction.x + " " + queuedServerMessageAction.y + " 0 0 false false");
+					ServerPlayer serverPlayer = (ServerPlayer) player;
+					long connectionFrame = level.frame - serverPlayer.startFrame;
+					System.out.println(connectionFrame);
+					messenger.sendMessageToClient(player.id, "PC " + queuedServerMessageAction.id + " " + connectionFrame + " " + queuedServerMessageAction.x + " " + queuedServerMessageAction.y + " 0 0 false false");
 				}
 			}
 			
 			//send all the connected players to this player
+			ServerPlayer serverPlayer = (ServerPlayer) level.getPlayerById(queuedServerMessageAction.id);
+			long connectionFrame = level.frame - serverPlayer.startFrame;
 			for (Player player: level.players) {
 				if (player.id != queuedServerMessageAction.id) {
-					messenger.sendMessageToClient(queuedServerMessageAction.id, "PC " + player.id + " " + player.x + " " + player.y
+					messenger.sendMessageToClient(queuedServerMessageAction.id, "PC " + player.id + " " + connectionFrame + " " + player.x + " " + player.y
 							+ " " + player.xSpeed + " " + player.ySpeed + " " + player.left + " " + player.right);
 				}
 			}
