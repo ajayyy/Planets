@@ -115,10 +115,10 @@ public class Level {
 	}
 	
 	/**
-	 * Rolls back the whole game to a certain frame
+	 * Rolls back the whole game to a certain frame.
 	 * 
 	 * @param level
-	 * @param oldFrame The frame to roll back to
+	 * @param oldFrame The frame to roll back to.
 	 */
 	public void rollBackToFrame(Level level, long oldFrame) {
 		//reset everything to this frame
@@ -127,6 +127,9 @@ public class Level {
 			PlayerOldState fromFrameOldState = player.getOldStateAtFrame(oldFrame);
 			
 			fromFrameOldState.makePlayerThisState(player);
+			
+			player.previousPlayerOldStates = player.playerOldStates;
+			player.removePlayerOldStates(oldFrame);
 		}
 		
 		//set the level frame to the correct frame
@@ -135,10 +138,23 @@ public class Level {
 	
 	/**
 	 * @param level
-	 * @param framesToSimulate Simulates this many frames happening
+	 * @param framesToSimulate Simulates this many frames happening.
 	 */
 	public void simulateFrames(Level level, long framesToSimulate) {
 		for (int i = 0; i < framesToSimulate; i++) {
+			//check to see if old state button pressed have to be set
+			for (Player player: players) {
+				PlayerOldState previousFrameOldState = player.getPreviousOldStateAtFrame(frame - 1);
+				PlayerOldState thisFrameOldState = player.getPreviousOldStateAtFrame(frame);
+				
+				//only care about the changes, since there is new input now
+				if (previousFrameOldState != null && thisFrameOldState != null) {
+					thisFrameOldState.makePlayerControlChangesToThisState(player, previousFrameOldState);
+				} else if (thisFrameOldState != null) {
+					thisFrameOldState.makePlayerProjectileToThisState(player);
+				}
+			}
+			
 			//simulate the frames
 			level.update(true);
 		}

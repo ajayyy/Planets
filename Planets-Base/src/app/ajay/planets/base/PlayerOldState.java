@@ -69,4 +69,32 @@ public class PlayerOldState {
 			player.projectileAngle = projectileAngle;
 		}
 	}
+	
+	/**
+	 * Sets player to be in this current state only for control variables.
+	 * 
+	 * Ex. left button, right button, shooting.
+	 * 
+	 * @param player
+	 */
+	public void makePlayerControlChangesToThisState(Player player, PlayerOldState lastFramePlayerOldState) {
+		if (lastFramePlayerOldState.left != left) player.left = left;
+		if (lastFramePlayerOldState.right != right) player.right = right;
+		
+		if (lastFramePlayerOldState.alive != alive) player.alive = alive;
+		
+		makePlayerProjectileToThisState(player);
+	}
+	
+	/**
+	 * Sets player to be in this current state only for projectile variables.
+
+	 * @param player
+	 */
+	public void makePlayerProjectileToThisState(Player player) {
+		if (projectileLaunched) {
+			player.projectileLaunched = projectileLaunched;
+			player.projectileAngle = projectileAngle;
+		}
+	}
 }

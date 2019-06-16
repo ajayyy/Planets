@@ -22,6 +22,13 @@ public class Player extends PhysicsObject {
 	List<PlayerOldState> playerOldStates = new ArrayList<PlayerOldState>();
 	
 	/**
+	 * These are the player old states that were just last used.
+	 * This is used after rolling back frames to be able to resimulate up to the correct
+	 * frame and still know what controls the player would have clicked in the future (if they have).
+	 */
+	List<PlayerOldState> previousPlayerOldStates = new ArrayList<PlayerOldState>();
+	
+	/**
 	 * Used during frames. If a projectile has been launched this frame.
 	 */
 	public boolean projectileLaunched = false;
@@ -141,6 +148,40 @@ public class Player extends PhysicsObject {
 	 */
 	public PlayerOldState getOldStateAtFrame(long frame) {
 		for (PlayerOldState oldState: playerOldStates) {
+			if (oldState.frame == frame) {
+				return oldState;
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Will remove the player old states from this frame and higher.
+	 * 
+	 * @param minFrame The lowest frame to be removed
+	 */
+	public void removePlayerOldStates(long minFrame) {
+		for (PlayerOldState playerOldState: new ArrayList<>(playerOldStates)) {
+			if (playerOldState.frame >= minFrame) {
+				//it's too recent
+				playerOldStates.remove(playerOldState);
+			}
+		}
+	}
+	
+	/**
+	 * Gets the previous old state for that frame of this player.
+	 * 
+	 * If none are found, returns null.
+	 * 
+	 * This gets it from the previousPlayerOldStates list instead of the playerOldStates
+	 * 
+	 * @param frame The frame of the old state
+	 * @return The old state at that frame
+	 */
+	public PlayerOldState getPreviousOldStateAtFrame(long frame) {
+		for (PlayerOldState oldState: previousPlayerOldStates) {
 			if (oldState.frame == frame) {
 				return oldState;
 			}
