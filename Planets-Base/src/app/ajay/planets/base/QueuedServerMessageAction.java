@@ -48,7 +48,8 @@ public class QueuedServerMessageAction {
 	
 	public enum ServerMessageActionType {
 		MESSAGE_RECEIVED,
-		PLAYER_CONNECTED
+		PLAYER_CONNECTED,
+		PLAYER_DISCONNECTED
 	}
 	
 	public QueuedServerMessageAction(Class<? extends Player> playerClass) {
@@ -115,6 +116,21 @@ public class QueuedServerMessageAction {
 	}
 	
 	/**
+	 * This is the constructor used by the server when a player disconnects.
+	 * 
+	 * Once the player disconnect is delt with, the server will call the callback.
+	 * 
+	 * @param id
+	 * @param serverMessageQueueCallback
+	 */
+	public QueuedServerMessageAction(int id, ServerMessageQueueCallback serverMessageQueueCallback) {
+		this.id = id;
+		this.serverMessageQueueCallback = serverMessageQueueCallback;
+		
+		actionType = ServerMessageActionType.PLAYER_DISCONNECTED;
+	}
+	
+	/**
 	 * Execute this queued event.
 	 */
 	public void execute(Level level) {
@@ -125,6 +141,9 @@ public class QueuedServerMessageAction {
 			break;
 		case PLAYER_CONNECTED:
 			playerConnected(level, id);
+			break;
+		case PLAYER_DISCONNECTED:
+			playerDisconnected(level, id);
 			break;
 		}
 	}
@@ -248,6 +267,22 @@ public class QueuedServerMessageAction {
 		serverMessageQueueCallback.serverMessageActionCompleted(this);
 	}
 	
+	/** Function used by server */
+	public void playerDisconnected(Level level, int id) {
+		//remove the player under this ID
+		for (int i = 0; i < level.players.size(); i++) {
+			if (level.players.get(i).id == id) {
+				level.players.remove(i);
+				break;
+			}
+		}
+		
+		System.out.println(id);
+		
+		serverMessageQueueCallback.serverMessageActionCompleted(this);
+	}
+	
+	/** Function used by client */
 	public void playerDisconnected(Level level, int id, String[] argumentStrings) {
 		//remove the player under this ID
 		for (int i = 0; i < level.players.size(); i++) {

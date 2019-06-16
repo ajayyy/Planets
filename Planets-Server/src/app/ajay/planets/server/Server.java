@@ -133,16 +133,7 @@ public class Server extends Canvas implements Runnable, ServerMessageReceiver, S
 	@Override
 	public void onDisconnected(int id) {
 		//remove the player under this ID
-		for (int i = 0; i < level.players.size(); i++) {
-			if (level.players.get(i).id == id) {
-				level.players.remove(i);
-				break;
-			}
-		}
-		
-		//send this new info to all clients
-		messenger.sendMessageToAll("PD " + id);
-
+		level.queuedServerMessageActions.add(new QueuedServerMessageAction(id, this));
 	}
 	
 	@Override
@@ -166,6 +157,10 @@ public class Server extends Canvas implements Runnable, ServerMessageReceiver, S
 							+ " " + player.xSpeed + " " + player.ySpeed + " " + player.left + " " + player.right);
 				}
 			}
+			break;
+		case PLAYER_DISCONNECTED:
+			//send this new info to all clients
+			messenger.sendMessageToAll("PD " + queuedServerMessageAction.id);
 			break;
 		}
 	}
