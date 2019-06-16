@@ -31,6 +31,14 @@ public class QueuedServerMessageAction {
 	 */
 	Class<? extends Player> playerClass = Player.class;
 	
+	/** 
+	 * The callback used for messages that the server deals with. 
+	 * Only used for player connects and disconnects, not messages
+	 */
+	ServerMessageQueueCallback serverMessageQueueCallback;
+	/** The coordinates used to spawn players in the PLAYER_CONNECTED action type */
+	public float x, y;
+	
 	/**
 	 * The list of commands that could be sent
 	 * 
@@ -39,11 +47,16 @@ public class QueuedServerMessageAction {
 	String[] commands = {"PC", "PD", "S", "L", "R", "LD", "RD"};
 	
 	public enum ServerMessageActionType {
-		MESSAGE_RECEIVED
+		MESSAGE_RECEIVED,
+		PLAYER_CONNECTED
+	}
+	
+	public QueuedServerMessageAction(Class<? extends Player> playerClass) {
+		this.playerClass = playerClass;
 	}
 	
 	/**
-	 * Constructor used doe a MESSAGE_RECEIVED action
+	 * Constructor used for a MESSAGE_RECEIVED action
 	 * The player class is needed for this command in case a player connected.
 	 * 
 	 * @param frame
@@ -51,11 +64,11 @@ public class QueuedServerMessageAction {
 	 * @param message
 	 */
 	public QueuedServerMessageAction(Class<? extends Player> playerClass, String message) {
+		this(playerClass);
+		
 		this.message = message;
-		this.playerClass = playerClass;
 		
 		actionType = ServerMessageActionType.MESSAGE_RECEIVED;
-
 	}
 	
 	/**
@@ -71,11 +84,34 @@ public class QueuedServerMessageAction {
 		this(playerClass, message);
 		
 		this.id = id;
-		
 		//because the id is known, this is a server message
 		//so, we must convert the relative time to a server absolute time
 		//with this variable
 		removePlayerStartTime = true;
+	}
+	
+	/**
+	 * This is the constructor used by the server when a player connects.
+	 * 
+	 * It takes a callback so that the server can send messages to the other clients when the player
+	 * has been added to the simulation on the server.
+	 * 
+	 * @param playerClass The type of player to instantiate. (Probably ServerPlayer)
+	 * @param id The id of the player being added.
+	 * @param x
+	 * @param y
+	 * @param serverMessageQueueCallback
+	 */
+	public QueuedServerMessageAction(Class<? extends Player> playerClass, int id, float x, float y, ServerMessageQueueCallback serverMessageQueueCallback) {
+		this(playerClass);
+		
+		this.id = id;
+		this.x = x;
+		this.y = y;
+		
+		this.serverMessageQueueCallback = serverMessageQueueCallback;
+		
+		actionType = ServerMessageActionType.PLAYER_CONNECTED;
 	}
 	
 	/**
@@ -86,6 +122,9 @@ public class QueuedServerMessageAction {
 		switch (actionType) {
 		case MESSAGE_RECEIVED:
 			messageReceived(level);
+			break;
+		case PLAYER_CONNECTED:
+			playerConnected(level, id);
 			break;
 		}
 	}
@@ -149,7 +188,7 @@ public class QueuedServerMessageAction {
 		switch (command) {
 		case 0:
 			//player connected
-			playerConnected(level, id, argumentStrings);
+			playerConnectedFromMessage(level, id, argumentStrings);
 			break;
 		case 1:
 			//player disconnected
@@ -178,7 +217,7 @@ public class QueuedServerMessageAction {
 		}
 	}
 	
-	public void playerConnected(Level level, int id, String[] argumentStrings) {
+	public void playerConnectedFromMessage(Level level, int id, String[] argumentStrings) {
 		//create the new player and add it to the list using reflection (since this class has no direct access to client classes)
 		try {
 			Player player = (Player) playerClass.getDeclaredConstructor(int.class, float.class, float.class, float.class, float.class, boolean.class, boolean.class)
@@ -191,6 +230,22 @@ public class QueuedServerMessageAction {
 				| NoSuchMethodException | SecurityException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void playerConnected(Level level, int id) {
+		//create the new player and add it to the list using reflection (since this class has no direct access to client classes)
+		try {
+			Player player = (Player) playerClass.getDeclaredConstructor(int.class, float.class, float.class, long.class)
+					.newInstance(id, x, y, level.frame);
+							
+			level.players.add(player);
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException e) {
+			e.printStackTrace();
+		}
+		
+		//call the callback, this has completed
+		serverMessageQueueCallback.serverMessageActionCompleted(this);
 	}
 	
 	public void playerDisconnected(Level level, int id, String[] argumentStrings) {

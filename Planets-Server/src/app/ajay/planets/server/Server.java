@@ -7,10 +7,11 @@ import app.ajay.planets.base.Level;
 import app.ajay.planets.base.Planet;
 import app.ajay.planets.base.Player;
 import app.ajay.planets.base.QueuedServerMessageAction;
+import app.ajay.planets.base.ServerMessageQueueCallback;
 import app.ajay.planets.server.networking.ServerMessageReceiver;
 import app.ajay.planets.server.networking.WebSocketServerMessenger;
 
-public class Server extends Canvas implements Runnable, ServerMessageReceiver {
+public class Server extends Canvas implements Runnable, ServerMessageReceiver, ServerMessageQueueCallback {
 	
 	private static final long serialVersionUID = -7693060249008916237L;
 	Thread serverThread;
@@ -125,22 +126,8 @@ public class Server extends Canvas implements Runnable, ServerMessageReceiver {
 
 	@Override
 	public void onConnected(int id) {
-		//make a new player under this id
-
-		//send this new info to all clients
-		for (Player player: level.players) {
-			messenger.sendMessageToClient(player.id, "PC " + id + " " + playerStartX + " " + playerStartY + " 0 0 false false");
-		}
-		
-		level.players.add(new ServerPlayer(id, playerStartX, playerStartY, level.frame));
-		
-		//send all the connected players to this player
-		for (Player player: level.players) {
-			if (player.id != id) {
-				messenger.sendMessageToClient(id, "PC " + player.id + " " + player.x + " " + player.y
-						+ " " + player.xSpeed + " " + player.ySpeed + " " + player.left + " " + player.right);
-			}
-		}
+		//add this action to the queue
+		level.queuedServerMessageActions.add(new QueuedServerMessageAction(ServerPlayer.class, id, playerStartX, playerStartY, this));
 	}
 
 	@Override
@@ -158,4 +145,29 @@ public class Server extends Canvas implements Runnable, ServerMessageReceiver {
 
 	}
 	
+	@Override
+	public void serverMessageActionCompleted(QueuedServerMessageAction queuedServerMessageAction) {
+		switch (queuedServerMessageAction.actionType) {
+		case MESSAGE_RECEIVED:
+			//do nothing
+			break;
+		case PLAYER_CONNECTED:
+			//send this new info to all clients
+			for (Player player: level.players) {
+				if (player.id != queuedServerMessageAction.id) {
+					messenger.sendMessageToClient(player.id, "PC " + queuedServerMessageAction.id + " " + queuedServerMessageAction.x + " " + queuedServerMessageAction.y + " 0 0 false false");
+				}
+			}
+			
+			//send all the connected players to this player
+			for (Player player: level.players) {
+				if (player.id != queuedServerMessageAction.id) {
+					messenger.sendMessageToClient(queuedServerMessageAction.id, "PC " + player.id + " " + player.x + " " + player.y
+							+ " " + player.xSpeed + " " + player.ySpeed + " " + player.left + " " + player.right);
+				}
+			}
+			break;
+		}
+	}
+
 }
