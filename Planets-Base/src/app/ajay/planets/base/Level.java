@@ -62,6 +62,9 @@ public class Level {
 			}
 		}
 		
+		//deal with physics object collisions
+		processPhysicsObjectCollisions();
+		
 		//update all players
 		for (Player player : players) {
 			player.update(this);
@@ -80,6 +83,40 @@ public class Level {
 		
 		//one frame has just occurred
 		frame++;
+	}
+	
+	/**
+	 * Goes through all other physics objects and tries to determine if any physics object is colliding with another.
+	 * It will then bounce the physics objects off of eachother.
+	 * 
+	 * It will not do the same collision twice.
+	 */
+	public void processPhysicsObjectCollisions() {
+		//All physics objects to check against
+		List<PhysicsObject> physicsObjects = new ArrayList<PhysicsObject>();
+		physicsObjects.addAll(players);
+		physicsObjects.addAll(projectiles);
+		
+		for (int i = 0; i < physicsObjects.size(); i++) {
+			for (int s = i + 1; s < physicsObjects.size(); s++) {
+				PhysicsObject physicsObject1 = physicsObjects.get(i);
+				PhysicsObject physicsObject2 = physicsObjects.get(s);
+				
+				if (MathHelper.isColliding(physicsObject1.x, physicsObject1.y, physicsObject2.x, physicsObject2.y, physicsObject1.radius, physicsObject2.radius)) {
+					//bounce these objects off of eachother
+					
+					//swap velocities
+					float oldXSpeed = physicsObject1.xSpeed;
+					float oldYSpeed = physicsObject1.ySpeed;
+					
+					physicsObject1.xSpeed = physicsObject2.xSpeed;
+					physicsObject1.ySpeed = physicsObject2.ySpeed;
+					
+					physicsObject2.xSpeed = oldXSpeed;
+					physicsObject2.ySpeed = oldYSpeed;
+				}
+			}
+		}
 	}
 	
 	/**

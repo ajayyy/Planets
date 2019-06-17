@@ -138,42 +138,10 @@ public class PhysicsObject extends WorldObject {
 			}
 		}
 		
-		physicsObjectCollisions(level);
-		
 		if (!velocityHandled) {
 			//change the position based on the velocities
 			x += xSpeed * timeStep;
 			y += ySpeed * timeStep;
-		}
-	}
-	
-	/**
-	 * Goes through all other physics objects and tries to determine if this physics object is colliding with another.
-	 * It will then bounce off that physics object
-	 * 
-	 * @param level
-	 */
-	public void physicsObjectCollisions(Level level) {
-		
-		//All physics objects to check against
-		List<PhysicsObject> physicsObjects = new ArrayList<PhysicsObject>();
-		physicsObjects.addAll(level.players);
-		physicsObjects.addAll(level.projectiles);
-		
-		for (PhysicsObject physicsObject: physicsObjects) {
-			if (MathHelper.isColliding(x, y, physicsObject.x, physicsObject.y, radius, physicsObject.radius)) {
-				//bounce off this object
-				
-				//swap velocities
-				float oldXSpeed = xSpeed;
-				float oldYSpeed = ySpeed;
-				
-				xSpeed = physicsObject.xSpeed;
-				ySpeed = physicsObject.ySpeed;
-				
-				physicsObject.xSpeed = oldXSpeed;
-				physicsObject.ySpeed = oldYSpeed;
-			}
 		}
 	}
 	
