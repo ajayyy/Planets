@@ -24,7 +24,8 @@ public class QueuedPlayerAction {
 	
 	public enum PlayerActionType {
 		LAUNCH_PROJECTILE,
-		CONNECTED_PLAYER
+		CONNECTED_PLAYER,
+		PLAYER_CHECK
 	}
 	
 	/**
@@ -69,6 +70,27 @@ public class QueuedPlayerAction {
 	}
 	
 	/**
+	 * A player's correct position has been sent from the server
+	 * 
+	 * @param frame
+	 * @param player
+	 * @param x
+	 * @param y
+	 * @param xSpeed
+	 * @param ySpeed
+	 */
+	public QueuedPlayerAction(long frame, Player player, float x, float y, float xSpeed, float ySpeed) {
+		this.frame = frame;
+		this.player = player;
+		this.x = x;
+		this.y = y;
+		this.xSpeed = xSpeed;
+		this.ySpeed = ySpeed;
+		
+		actionType = PlayerActionType.PLAYER_CHECK;
+	}
+	
+	/**
 	 * Execute this queued event.
 	 */
 	public void execute(Level level) {
@@ -79,6 +101,10 @@ public class QueuedPlayerAction {
 			break;
 		case CONNECTED_PLAYER:
 			level.connectPlayerAtFrame(level.frame, playerClass, id, x, y, xSpeed, ySpeed, left, right);
+			break;
+		case PLAYER_CHECK:
+			level.correctPlayerStrateAtFrame(level.frame, player, x, y, xSpeed, ySpeed);
+			break;
 		}
 	}
 		

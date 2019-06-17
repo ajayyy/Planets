@@ -123,7 +123,6 @@ public class Level {
 	 * Launches projectile as if the game were still at an old frame.
 	 * Rolls back to that frame, launches the projectile, then resimulates the frames up to present
 	 * 
-	 * @param level
 	 * @param oldFrame The frame that this event should have happened
 	 * @param player
 	 * @param projectileAngle
@@ -153,13 +152,18 @@ public class Level {
 	}
 	
 	/**
-	 * Launches projectile as if the game were still at an old frame.
-	 * Rolls back to that frame, launches the projectile, then resimulates the frames up to present
+	 * Connects player as if the game were still at an old frame.
+	 * Rolls back to that frame, connects the player, then resimulates the frames up to present
 	 * 
-	 * @param level
 	 * @param oldFrame The frame that this event should have happened
-	 * @param player
-	 * @param projectileAngle
+	 * @param playerClass
+	 * @param id
+	 * @param x
+	 * @param y
+	 * @param xSpeed
+	 * @param ySpeed
+	 * @param left
+	 * @param right
 	 */
 	public void connectPlayerAtFrame(long oldFrame, Class<? extends Player> playerClass, int id, float x, float y, float xSpeed, float ySpeed, boolean left, boolean right) {
 		long framesToSimulate = frame - oldFrame;
@@ -194,6 +198,42 @@ public class Level {
 	}
 	
 	/**
+	 * Corrects player state as if the game were still at an old frame.
+	 * Rolls back to that frame, corrects the player state, then resimulates the frames up to present
+	 * 
+	 * @param oldFrame The frame that this event should have happened
+	 * @param player
+	 * @param x
+	 * @param y
+	 * @param xSpeed
+	 * @param ySpeed
+	 */
+	public void correctPlayerStrateAtFrame(long oldFrame, Player player, float x, float y, float xSpeed, float ySpeed) {
+		long framesToSimulate = frame - oldFrame;
+		
+		if (framesToSimulate < 0) {
+			//add this as a queued event instead
+			queuedActions.add(new QueuedPlayerAction(oldFrame, player, x, y, xSpeed, ySpeed));
+			return;
+		}
+		
+		//only simulate if necessary
+		if (framesToSimulate != 0) {
+			rollBackToFrame(oldFrame);
+		}
+		
+		player.x = x;
+		player.y = y;
+		player.xSpeed = xSpeed;
+		player.ySpeed = ySpeed;
+		
+		//only simulate if necessary
+		if (framesToSimulate != 0) {
+			simulateFrames(framesToSimulate);
+		}
+	}
+	
+	/**
 	 * Rolls back the whole game to a certain frame.
 	 * 
 	 * @param level
@@ -204,6 +244,11 @@ public class Level {
 		for (Player player: players) {
 			//this frame's old state
 			PlayerOldState fromFrameOldState = player.getOldStateAtFrame(oldFrame);
+			
+			if (fromFrameOldState == null) {
+				System.err.println("It looks like some clients are lagging too far into the past. Frame: " + oldFrame + " Player ID: " + player.id);
+				return;
+			}
 			
 			fromFrameOldState.makePlayerThisState(player);
 			

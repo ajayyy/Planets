@@ -44,7 +44,7 @@ public class QueuedServerMessageAction {
 	 * 
 	 * Player connected, player disconnected, player shot, left, right, left disabled, right disabled
 	 */
-	String[] commands = {"PC", "PD", "S", "L", "R", "LD", "RD"};
+	String[] commands = {"PC", "PD", "S", "L", "R", "LD", "RD", "CH"};
 	
 	public enum ServerMessageActionType {
 		MESSAGE_RECEIVED,
@@ -233,6 +233,10 @@ public class QueuedServerMessageAction {
 			//right unpressed
 			level.getPlayerById(id).right = false;
 			break;
+		case 7:
+			//player position check from the server
+			playerCorrectionFromMessage(level, id, argumentStrings);
+			break;
 		}
 	}
 	
@@ -291,6 +295,15 @@ public class QueuedServerMessageAction {
 		long frame = getRelativeFrameNumber(Integer.parseInt(argumentStrings[1]), player);
 		
 		level.launchProjectileAtFrame(frame, player, Float.parseFloat(argumentStrings[2]));
+	}
+	
+	public void playerCorrectionFromMessage(Level level, int id, String[] argumentStrings) {
+		//correct the player state at the frame it was sent from
+		Player player = level.getPlayerById(id);
+		
+		long frame = getRelativeFrameNumber(Integer.parseInt(argumentStrings[1]), player);
+		
+		level.correctPlayerStrateAtFrame(frame, player, Float.parseFloat(argumentStrings[2]), Float.parseFloat(argumentStrings[3]), Float.parseFloat(argumentStrings[4]), Float.parseFloat(argumentStrings[5]));
 	}
 	
 	/**

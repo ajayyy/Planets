@@ -85,6 +85,27 @@ public class Server extends Canvas implements Runnable, ServerMessageReceiver, S
 		for (int i = 0; i < framesNeeded; i++) {
 			level.update(false);
 			
+			//every 20 frames send out a frame check to ensure that all clients
+			//have all players in the correct position
+			if (level.frame % 60 == 0) {
+				for (int playerDataIndex = 0; playerDataIndex < level.players.size(); playerDataIndex++) {
+					for (int playerSendingToIndex = 0; playerSendingToIndex < level.players.size(); playerSendingToIndex++) {
+						Player player = level.players.get(playerDataIndex);
+						
+						ServerPlayer sendingToPlayer = (ServerPlayer) level.players.get(playerSendingToIndex);
+						long frame = level.frame - sendingToPlayer.startFrame;
+						
+						int id = player.id;
+						if (playerDataIndex == playerSendingToIndex) {
+							//all clients are id -1 for themselves
+							id = -1;
+						}
+
+						messenger.sendMessageToClient(sendingToPlayer.id, "CH " + id + " " +  frame + " " + player.x + " " + player.y + " " + player.xSpeed + " " + player.ySpeed);
+					}
+				}
+			}
+			
 			//add back how much time has passed
 			lastTime += 1000000000 / level.physicsFrameRate;
 		}
