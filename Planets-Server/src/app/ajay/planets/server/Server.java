@@ -31,7 +31,7 @@ public class Server extends Canvas implements Runnable, ServerMessageReceiver, S
 	
 	//starting positions of all players
 	float playerStartX = 0;
-	float playerStartY = 400;
+	float playerStartY = 600;
 	
 	/**
 	 * The list of commands that could be sent from the clients

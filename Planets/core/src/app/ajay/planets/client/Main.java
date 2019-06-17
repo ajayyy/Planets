@@ -34,7 +34,7 @@ public class Main extends ApplicationAdapter implements ClientMessageReceiver {
 	
 	//starting positions of all players
 	float playerStartX = 0;
-	float playerStartY = 400;
+	float playerStartY = 600;
 	
 	@Override
 	public void create() {
