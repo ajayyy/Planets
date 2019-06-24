@@ -1,5 +1,4 @@
 buildscript {
-    
 
     repositories {
         mavenLocal()
@@ -13,8 +12,6 @@ buildscript {
         classpath 'org.wisepersist:gwt-gradle-plugin:1.0.6'
         classpath 'com.android.tools.build:gradle:3.2.0'
         classpath 'com.mobidevelop.robovm:robovm-gradle-plugin:2.3.6'
-        
-
     }
 }
 
@@ -24,7 +21,7 @@ allprojects {
 
     version = '1.0'
     ext {
-        appName = "planets"
+        appName = "Planets"
         gdxVersion = '1.9.9'
         roboVMVersion = '2.3.6'
         box2DLightsVersion = '1.4'
@@ -45,13 +42,12 @@ allprojects {
 project(":desktop") {
     apply plugin: "java"
 
-
     dependencies {
         compile project(":core")
         compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         compile "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
-        
+		compile files("../../Planets-Base/libs/java_websocket.jar")
     }
 }
 
@@ -113,11 +109,19 @@ project(":html") {
 project(":core") {
     apply plugin: "java"
 
-
     dependencies {
+		compile project(":base")
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
-        
+    }
+}
+
+project(":server") {
+    apply plugin: "java"
+
+	dependencies {
+		compile project(":base")
+        compile files("../Planets-Base/libs/java_websocket.jar")
     }
 }
 

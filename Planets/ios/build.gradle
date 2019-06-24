@@ -17,6 +17,6 @@ robovm {
 }
 
 eclipse.project {
-    name = appName + "-ios"
+    name = appName + "-Ios"
     natures 'org.robovm.eclipse.RoboVMNature'
 }
