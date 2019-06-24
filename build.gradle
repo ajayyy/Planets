@@ -47,7 +47,7 @@ project(":desktop") {
         compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         compile "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
-		compile files("../../Planets-Base/libs/java_websocket.jar")
+		compile files(project(":base").projectDir.path + "/libs/java_websocket.jar")
     }
 }
 
@@ -121,7 +121,7 @@ project(":server") {
 
 	dependencies {
 		compile project(":base")
-        compile files("../Planets-Base/libs/java_websocket.jar")
+        compile files(project(":base").projectDir.path + "/libs/java_websocket.jar")
     }
 }
 

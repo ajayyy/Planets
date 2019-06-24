@@ -1,3 +1,0 @@
-include 'desktop', 'android', 'ios', 'html', 'core', 'base', 'server'
-project(":base").projectDir = new File("../Planets-Base/")
-project(":server").projectDir = new File("../Planets-Server/")
