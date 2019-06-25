@@ -1,6 +1,6 @@
 sourceSets.main.java.srcDirs = [ "src/" ]
 
-sourceCompatibility = '1.7'
+sourceCompatibility = '1.8'
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
 ext {
@@ -17,6 +17,6 @@ robovm {
 }
 
 eclipse.project {
-    name = appName + "-ios"
+    name = appName + "-Ios"
     natures 'org.robovm.eclipse.RoboVMNature'
 }

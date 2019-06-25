@@ -1,0 +1,9 @@
+include 'desktop', 'android', 'ios', 'html', 'core', 'base', 'server'
+project(":desktop").projectDir = new File("Planets-Client/desktop")
+project(":android").projectDir = new File("Planets-Client/android")
+project(":ios").projectDir = new File("Planets-Client/ios")
+project(":html").projectDir = new File("Planets-Client/html")
+project(":core").projectDir = new File("Planets-Client/core")
+
+project(":base").projectDir = new File("Planets-Base")
+project(":server").projectDir = new File("Planets-Server")
