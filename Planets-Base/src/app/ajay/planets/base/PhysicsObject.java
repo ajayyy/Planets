@@ -61,8 +61,8 @@ public class PhysicsObject extends WorldObject {
 			float totalGravityAccelY = 0;
 			
 			for (Planet planet: closePlanetsList) {
-				float xDist = x - planet.x;
-				float yDist = y - planet.y;
+				double xDist = x - planet.x;
+				double yDist = y - planet.y;
 				
 				//squared since this is just a midstep for the below equation to make it easier to understand
 				double squaredDistanceFromPlanet = Math.pow(xDist, 2) + Math.pow(yDist, 2);
@@ -70,9 +70,9 @@ public class PhysicsObject extends WorldObject {
 				//gravitate toward planets
 				//using the gravity equation found here: https://www.desmos.com/calculator/6l1w4h1qjb
 				//inverse square law to get the intensity, cos or sin for direction
-				double accelX = -(Math.cos(Math.atan2(yDist, xDist)) * gravityConstant)/ (squaredDistanceFromPlanet);
-				double accelY = -(Math.sin(Math.atan2(yDist, xDist)) * gravityConstant)/ (squaredDistanceFromPlanet);
-				
+				double accelX = -(xDist * gravityConstant)/ (squaredDistanceFromPlanet*Math.sqrt(squaredDistanceFromPlanet));
+				double accelY = -(yDist * gravityConstant)/ (squaredDistanceFromPlanet*Math.sqrt(squaredDistanceFromPlanet));
+
 				totalGravityAccelX += accelX;
 				totalGravityAccelY += accelY;
 			}
@@ -99,22 +99,25 @@ public class PhysicsObject extends WorldObject {
 					if (canBounce) {
 						//move back to be right on the object
 						
-						//find angle from the object
-						float planetNormalAngle = (float) Math.atan2(newY - closestPlanet.y, newX - closestPlanet.x);
+						//This distance will be changed and become just the planet's radius after this step
+						double currentDistanceToPlanet = MathHelper.getDist(newX, newY, closestPlanet.x, closestPlanet.y);
+						double currentXDistance = newX - closestPlanet.x;
+						double currentYDistance = newY - closestPlanet.y;
 						
 						//find where the position should be
-						x = (float) (Math.cos(planetNormalAngle) * (closestPlanet.radius + radius)) + closestPlanet.x;
-						y = (float) (Math.sin(planetNormalAngle) * (closestPlanet.radius + radius)) + closestPlanet.y;
+						x = (float) ((currentXDistance/currentDistanceToPlanet) * (closestPlanet.radius + radius)) + closestPlanet.x;
+						y = (float) ((currentYDistance/currentDistanceToPlanet) * (closestPlanet.radius + radius)) + closestPlanet.y;
 						
-						//the extra wasted timestep has to be ignored, since all time steps should always be the same length
+						//the extra wasted timestep has to be ignored, since all time steps should always be the same length of time
 						
 						//bounce, this finds the optimal angle to bounce the object at
 						//this is used to make the previous speed be taken into account
 						//modified algoritm from https://stackoverflow.com/a/573206/1985387
 						
 						//project the current speed onto the normal of the planet
-						double xSpeedOnNormal = 2 * (MathHelper.getDotProduct(xSpeed, ySpeed, Math.cos(planetNormalAngle), Math.sin(planetNormalAngle))) * Math.cos(planetNormalAngle);
-						double ySpeedOnNormal = 2 * (MathHelper.getDotProduct(xSpeed, ySpeed, Math.cos(planetNormalAngle), Math.sin(planetNormalAngle))) * Math.sin(planetNormalAngle);
+						//it's okay to use currentXDistance here since curretDistanceToPlanet is also used, the new position and radius would form a similar triangle
+						double xSpeedOnNormal = 2 * (MathHelper.getDotProduct(xSpeed, ySpeed, currentXDistance / currentDistanceToPlanet, currentYDistance / currentDistanceToPlanet)) * (currentXDistance / currentDistanceToPlanet);
+						double ySpeedOnNormal = 2 * (MathHelper.getDotProduct(xSpeed, ySpeed, currentXDistance / currentDistanceToPlanet, currentYDistance / currentDistanceToPlanet)) * (currentYDistance / currentDistanceToPlanet);
 						
 						//the direction that it should bounce at in components
 						//calculated by removing the current speed projected onto the normal from the current speed
@@ -123,11 +126,12 @@ public class PhysicsObject extends WorldObject {
 						double bounceDirectionX = xSpeed - xSpeedOnNormal;
 						double bounceDirectionY = ySpeed - ySpeedOnNormal;
 						
-						//the angle from that direction
-						double bounceAngle = Math.atan2(bounceDirectionY, bounceDirectionX);
+						//the magnitude of the bounce direction, used to find components
+						double bounceDirectionMagnitude = MathHelper.getDist(bounceDirectionX, bounceDirectionY);
+						
 						//multiply that direction by the scale
-						xSpeed = (float) (Math.cos(bounceAngle) * bounceVelocityConstant);
-						ySpeed = (float) (Math.sin(bounceAngle) * bounceVelocityConstant);
+						xSpeed = (float) ((bounceDirectionX / bounceDirectionMagnitude) * bounceVelocityConstant);
+						ySpeed = (float) ((bounceDirectionY / bounceDirectionMagnitude) * bounceVelocityConstant);
 						
 						velocityHandled = true;
 					} else {
