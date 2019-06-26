@@ -10,11 +10,13 @@ Clone this repo into a folder inside of an Eclipse workspace. Setup might be sli
 
 To use WebGL export, you must install the GWT plugin in eclipse. Make sure to do this before going to the next step. If you don't plan on exporting to WebGL, you don't have to install this.
 
-The Android SDK is needed to run this project.
+The Android SDK is needed if you want to use the Android project.
 
 ### Setup
 
-Create a file called `local.properties` in the main directory following the format of `local.properties.example`. Make sure to put in the path to your Android SDK.
+If you are using the Android project, create a file called `local.properties` in the main directory following the format of `local.properties.example`. Make sure to put in the path to your Android SDK.
+
+**If you are not planning on using the Android project**, follow this workaround to remove need for the Android SDK: Remove `'android'` from the `include` line in `settings.gradle`. Remove the line referencing the project directory of the Android project in `settings.gradle`. Remove the `project(":android") ` method in `build.gradle`. This will make the Android project not get built, but all other projects will still work. This step **does not** need to be done with the WebGL project if you don't have the GWT plugin.
 
 Open the `Planets` folder as a gradle project.
 
