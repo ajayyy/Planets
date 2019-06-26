@@ -61,20 +61,20 @@ public class Player extends PhysicsObject {
 			//this planet will be used to move against
 			Planet closestPlanet = getClosestPlanet(level.planets, x, y);
 			
-			//find angle from the object
-			float planetAngle = (float) Math.atan2(y - closestPlanet.y, x - closestPlanet.x);
+			//find the components of the objects angle with the planet
+			double xDistanceToPlanet = x - closestPlanet.x;
+			double yDistanceToPlanet = y - closestPlanet.y;
+			double magnitudeDistanceToPlanet = MathHelper.getDist(xDistanceToPlanet, yDistanceToPlanet);
 			
 			//change speeds based on movement
 			if (right) {
-				float movementAngle = (float) (planetAngle - Math.PI / 2);
-				
-				xSpeed += Math.cos(movementAngle) * movementSpeed * level.deltaTime;
-				ySpeed += Math.sin(movementAngle) * movementSpeed * level.deltaTime;
+				//the actual movement that is needed, is the perpendicular slope, which is the negative reciprocal
+				xSpeed -= (-yDistanceToPlanet / magnitudeDistanceToPlanet) * movementSpeed * level.deltaTime;
+				ySpeed -= (xDistanceToPlanet / magnitudeDistanceToPlanet) * movementSpeed * level.deltaTime;
 			} else if (left) {
-				float movementAngle = (float) (planetAngle + Math.PI / 2);
-				
-				xSpeed += Math.cos(movementAngle) * movementSpeed * level.deltaTime;
-				ySpeed += Math.sin(movementAngle) * movementSpeed * level.deltaTime;
+				//the actual movement that is needed, is the perpendicular slope, which is the negative reciprocal
+				xSpeed += (-yDistanceToPlanet / magnitudeDistanceToPlanet) * movementSpeed * level.deltaTime;
+				ySpeed += (xDistanceToPlanet / magnitudeDistanceToPlanet) * movementSpeed * level.deltaTime;
 			}
 		}
 	}
