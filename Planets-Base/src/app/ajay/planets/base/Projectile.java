@@ -8,17 +8,17 @@ public class Projectile extends PhysicsObject {
 	 */
 	public float projectileStrength = 400f;
 	
-	public Projectile(float x, float y, float angle) {
+	public Projectile(float x, float y, float xLaunchDirection, float yLaunchDirection) {
 		super();
 		
 		radius = 3;
 		
 		//move this out of the player to not be colliding
-		this.x = (float) (x + radius * 2 * Math.cos(angle));
-		this.y = (float) (y + radius * 2 * Math.sin(angle));
+		this.x = (float) (x + radius * 2 * xLaunchDirection);
+		this.y = (float) (y + radius * 2 * yLaunchDirection);
 		
-		xSpeed = (float) (Math.cos(angle) * projectileStrength);
-		ySpeed = (float) (Math.sin(angle) * projectileStrength);
+		xSpeed = (float) (xLaunchDirection * projectileStrength);
+		ySpeed = (float) (yLaunchDirection * projectileStrength);
 		
 	}
 	

@@ -128,12 +128,12 @@ public class Level {
 	 * @param player
 	 * @param projectileAngle
 	 */
-	public void launchProjectileAtFrame(long oldFrame, Player player, float projectileAngle) {
+	public void launchProjectileAtFrame(long oldFrame, Player player, float xLaunchDirection, float yLaunchDirection) {
 		long framesToSimulate = frame - oldFrame;
 		
 		if (framesToSimulate < 0) {
 			//add this as a queued event instead
-			queuedActions.add(new QueuedPlayerAction(oldFrame, player, projectileAngle));
+			queuedActions.add(new QueuedPlayerAction(oldFrame, player, xLaunchDirection, yLaunchDirection));
 			return;
 		}
 		
@@ -144,7 +144,8 @@ public class Level {
 		
 		//launch the projectile at this frame
 		player.projectileLaunched = true;
-		player.projectileAngle = projectileAngle;
+		player.projectileXLaunchDirection = xLaunchDirection;
+		player.projectileYLaunchDirection = yLaunchDirection;
 		
 		//only simulate if necessary
 		if (framesToSimulate != 0) {

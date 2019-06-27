@@ -84,9 +84,7 @@ public class Main extends ApplicationAdapter implements ClientMessageReceiver {
 		spriteBatch.setProjectionMatrix(camera.combined);
 		shapeRenderer.setProjectionMatrix(camera.combined);
 		
-		//central marker to not get lost
-		shapeRenderer.begin(ShapeType.Filled);
-		shapeRenderer.circle(0, 0, 3);
+		//central marker to not get losta
 		shapeRenderer.end();
 		
 		//render level

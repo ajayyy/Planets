@@ -290,7 +290,7 @@ public class QueuedServerMessageAction {
 		
 		long frame = getRelativeFrameNumber(Integer.parseInt(argumentStrings[1]), player);
 		
-		level.launchProjectileAtFrame(frame, player, Float.parseFloat(argumentStrings[2]));
+		level.launchProjectileAtFrame(frame, player, Float.parseFloat(argumentStrings[2]), Float.parseFloat(argumentStrings[3]));
 	}
 	
 	/**

@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
 
 import app.ajay.planets.base.Level;
+import app.ajay.planets.base.MathHelper;
 
 public class ClientControlledPlayer extends ClientPlayer {
 	
@@ -47,14 +48,21 @@ public class ClientControlledPlayer extends ClientPlayer {
 			Vector3 worldCoords = ((ClientLevel) level).main.camera.unproject(screenCoords);
 			
 			//get angle that this projectile should be launched at
-			float launchAngle = (float) (Math.atan2(y - worldCoords.y, x - worldCoords.x) - Math.PI);
+			float xLaunchDirection = worldCoords.x - x;
+			float yLaunchDirection = worldCoords.y - y;
+			double launchDirectionDistance = MathHelper.getDist(xLaunchDirection, yLaunchDirection);
 			
+			//get the normalized direction components
+			xLaunchDirection /= launchDirectionDistance;
+			yLaunchDirection /= launchDirectionDistance;
+
 			//queue up a projectile launch
 			projectileLaunched = true;
-			projectileAngle = launchAngle;
+			projectileXLaunchDirection = xLaunchDirection;
+			projectileYLaunchDirection = yLaunchDirection;
 			
 			//send command to server
-			((ClientLevel) level).main.messenger.sendMessage("S " + level.frame + " " + launchAngle);
+			((ClientLevel) level).main.messenger.sendMessage("S " + level.frame + " " + xLaunchDirection + " " + yLaunchDirection);
 		}
 	}
 	

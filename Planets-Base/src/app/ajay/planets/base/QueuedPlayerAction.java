@@ -14,7 +14,7 @@ public class QueuedPlayerAction {
 	public Player player;
 	
 	//for projectile launch
-	public float projectileAngle;
+	public float projectileXLaunchDirection, projectileYLaunchDirection;
 	
 	//for player connection
 	Class<? extends Player> playerClass;
@@ -33,10 +33,11 @@ public class QueuedPlayerAction {
 	 * @param frame The frame this action should happen.
 	 * @param projectileAngle
 	 */
-	public QueuedPlayerAction(long frame, Player player, float projectileAngle) {
+	public QueuedPlayerAction(long frame, Player player, float xLaunchDirection, float yLaunchDirection) {
 		this.frame = frame;
 		this.player = player;
-		this.projectileAngle = projectileAngle;
+		this.projectileXLaunchDirection = xLaunchDirection;
+		this.projectileYLaunchDirection = yLaunchDirection;
 		
 		actionType = PlayerActionType.LAUNCH_PROJECTILE;
 	}
@@ -75,7 +76,7 @@ public class QueuedPlayerAction {
 		//execute differently based on action type
 		switch (actionType) {
 		case LAUNCH_PROJECTILE:
-			level.launchProjectileAtFrame(level.frame, player, projectileAngle);
+			level.launchProjectileAtFrame(level.frame, player, projectileXLaunchDirection, projectileYLaunchDirection);
 			break;
 		case CONNECTED_PLAYER:
 			level.connectPlayerAtFrame(level.frame, playerClass, id, x, y, xSpeed, ySpeed, left, right);

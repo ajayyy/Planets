@@ -12,13 +12,13 @@ public class PlayerOldState {
 	
 	/** projectileLaunched is if  projectile has been launched this frame */
 	boolean projectileLaunched;
-	float projectileAngle;
+	float projectileXLaunchDirection, projectileYLaunchDirection;
 	
 	/** what frame is this state from */
 	long frame;
 	
 	public PlayerOldState(long frame, float x, float y, float xSpeed, float ySpeed, boolean left, boolean right, 
-			boolean alive, boolean projectileLaunched, float projectileAngle) {
+			boolean alive, boolean projectileLaunched, float xLaunchDirection, float yLaunchDirection) {
 		this.frame = frame;
 		this.x = x;
 		this.y = y;
@@ -31,22 +31,23 @@ public class PlayerOldState {
 		
 		if (projectileLaunched) {
 			this.projectileLaunched = projectileLaunched;
-			this.projectileAngle = projectileAngle;
+			this.projectileXLaunchDirection = xLaunchDirection;
+			this.projectileYLaunchDirection = yLaunchDirection;
 		}
 	}
 	
 	public PlayerOldState(long frame, float x, float y, float xSpeed, float ySpeed, boolean left, boolean right,
-			boolean projectileLaunched, float projectileAngle) {
-		this(frame, x, y, xSpeed, ySpeed, left, right, true, projectileLaunched, projectileAngle);
+			boolean projectileLaunched, float xLaunchDirection, float yLaunchDirection) {
+		this(frame, x, y, xSpeed, ySpeed, left, right, true, projectileLaunched, xLaunchDirection, yLaunchDirection);
 	}
 	
 	public PlayerOldState(long frame, float x, float y, float xSpeed, float ySpeed, boolean left, boolean right, 
-			float projectileAngle) {
-		this(frame, x, y, xSpeed, ySpeed, left, right, true, projectileAngle);
+			float xLaunchDirection, float yLaunchDirection) {
+		this(frame, x, y, xSpeed, ySpeed, left, right, true, xLaunchDirection, yLaunchDirection);
 	}
 	
 	public PlayerOldState(long frame, float x, float y, float xSpeed, float ySpeed, boolean left, boolean right) {
-		this(frame, x, y, xSpeed, ySpeed, left, right, false, -1);
+		this(frame, x, y, xSpeed, ySpeed, left, right, false, -1, -1);
 	}
 	
 	/**
@@ -66,7 +67,8 @@ public class PlayerOldState {
 		
 		if (projectileLaunched) {
 			player.projectileLaunched = projectileLaunched;
-			player.projectileAngle = projectileAngle;
+			player.projectileXLaunchDirection = projectileXLaunchDirection;
+			player.projectileYLaunchDirection = projectileYLaunchDirection;
 		}
 	}
 	
@@ -93,8 +95,8 @@ public class PlayerOldState {
 	 */
 	public void makePlayerProjectileToThisState(Player player) {
 		if (projectileLaunched) {
-			player.projectileLaunched = projectileLaunched;
-			player.projectileAngle = projectileAngle;
+			player.projectileXLaunchDirection = projectileXLaunchDirection;
+			player.projectileYLaunchDirection = projectileYLaunchDirection;
 		}
 	}
 }

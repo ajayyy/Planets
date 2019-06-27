@@ -32,7 +32,7 @@ public class Player extends PhysicsObject {
 	 * Used during frames. If a projectile has been launched this frame.
 	 */
 	public boolean projectileLaunched = false;
-	public float projectileAngle;
+	public float projectileXLaunchDirection, projectileYLaunchDirection;
 	
 	/**
 	 * The class to launch for projectiles.
@@ -85,11 +85,10 @@ public class Player extends PhysicsObject {
 	public void postUpdate(Level level) {
 		if (projectileLaunched) {
 			//there has been a projectile launch queued up
-			launchProjectile(level, projectileAngle);
+			launchProjectile(level, projectileXLaunchDirection, projectileYLaunchDirection);
 			
 			//reset projectile information
 			projectileLaunched = false;
-			projectileAngle = -1;
 		}
 		
 		//save an old state of this frame
@@ -104,34 +103,34 @@ public class Player extends PhysicsObject {
 	 * @param level
 	 * @param launchAngle
 	 */
-	public void launchProjectile(Level level, float launchAngle) {
+	public void launchProjectile(Level level, float xLaunchDirection, float yLaunchDirection) {
 		//place it right at the edge of the player
-		float projectileX = (float) (x + radius * Math.cos(launchAngle));
-		float projectileY = (float) (y + radius * Math.sin(launchAngle));
+		float projectileX = (float) (x + radius * xLaunchDirection);
+		float projectileY = (float) (y + radius * yLaunchDirection);
 		
 		Projectile projectile = null;
 		try {
-			projectile = (Projectile) projectileClass.getDeclaredConstructor(float.class, float.class, float.class).newInstance(projectileX, projectileY, launchAngle);
+			projectile = (Projectile) projectileClass.getDeclaredConstructor(float.class, float.class, float.class, float.class).newInstance(projectileX, projectileY, xLaunchDirection, yLaunchDirection);
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
 				| NoSuchMethodException | SecurityException e) {
 			e.printStackTrace();
 		}
 		
 		//add the opposite force to the player
-		xSpeed += (float) (Math.cos(launchAngle + Math.PI) * projectile.projectileStrength * 0.3f);
-		ySpeed += (float) (Math.sin(launchAngle + Math.PI) * projectile.projectileStrength * 0.3f);
+		xSpeed += (float) ((-xLaunchDirection) * projectile.projectileStrength * 0.3f);
+		ySpeed += (float) ((-yLaunchDirection) * projectile.projectileStrength * 0.3f);
 		
 		level.projectiles.add(projectile);
 		
-		projectileLaunched = true;
-		projectileAngle = launchAngle;
+		projectileXLaunchDirection = xLaunchDirection;
+		projectileYLaunchDirection = yLaunchDirection;
 	}
 	
 	/**
 	 * Saves an old state of this frame at this current time.
 	 */
 	public void saveOldState(Level level) {
-		playerOldStates.add(new PlayerOldState(level.frame, x, y, xSpeed, ySpeed, left, right, alive, projectileLaunched, projectileAngle));
+		playerOldStates.add(new PlayerOldState(level.frame, x, y, xSpeed, ySpeed, left, right, alive, projectileLaunched, projectileXLaunchDirection, projectileYLaunchDirection));
 		
 		if (playerOldStates.size() > 300) {
 			playerOldStates.remove(0);

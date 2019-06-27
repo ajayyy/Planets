@@ -9,8 +9,8 @@ import app.ajay.planets.base.Projectile;
 
 public class ClientProjectile extends Projectile {
 	
-	public ClientProjectile(float x, float y, float angle) {
-		super(x, y, angle);
+	public ClientProjectile(float x, float y, float xLaunchProjectile, float yLaunchProjectile) {
+		super(x, y, xLaunchProjectile, yLaunchProjectile);
 	}
 	
 	public void render(Level level, SpriteBatch batch, ShapeRenderer shapeRenderer) {
